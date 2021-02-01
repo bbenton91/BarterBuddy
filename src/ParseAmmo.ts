@@ -122,7 +122,9 @@ export class ParseAmmo{
         // let re = RegExp()
         var src = names[nameIndex]?.querySelector("img")?.src ?? "";
         if (src === "") {
-          console.log("src is empty for "+name)
+          console.log("src is empty for " + name)
+          console.log(names[nameIndex]);
+          console.log(names[nameIndex]?.querySelector("img"));
           continue;
         }
         var imgName = src.match(re)[0]
