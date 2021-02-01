@@ -768,7 +768,7 @@ var app = (function () {
         static parseInputItems(element) {
             var _a, _b, _c, _d;
             var children = Array.from(element.childNodes);
-            var names = Array.from(element.querySelectorAll("a[title]"));
+            var names = Array.from(element.querySelectorAll("a[title]")).filter(x => x.querySelector("img") !== null);
             var amounts = children
                 .filter(x => x.nodeType == Node.TEXT_NODE) // Only gets text
                 .filter(x => !ParseAmmo.isEmptyOrSpaces(x.textContent) && ParseAmmo.isValidInt(x.textContent.trim().slice(1))) // gets valid non-empty numbers. We do slice(1) because numbers are in the format of x1, x60, etc

@@ -102,7 +102,7 @@ export class ParseAmmo{
 
   private static parseInputItems(element: HTMLTableColElement):Array<Item> {
     var children = Array.from(element.childNodes);
-    var names = Array.from(element.querySelectorAll("a[title]"));
+    var names = Array.from(element.querySelectorAll("a[title]")).filter(x => x.querySelector("img") !== null);
 
     var amounts = children
       .filter(x => x.nodeType == Node.TEXT_NODE) // Only gets text
