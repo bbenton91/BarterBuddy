@@ -46,9 +46,17 @@
 
                     <!-- This is the output item -->
                     <td class="border-2 border-color p-5 w-1/6">
-                        <div class="flex flex-col justify-items-center">
-                            <img class="self-center" src={"/images"+listing.output.iconHref} alt="">
-                            {listing.output.name}
+                        <div class="flex flex justify-center">
+                            <!-- The picture and name -->
+                            <div class="flex flex-col justify-items-center">
+                                <a class="self-center" href={gamepediaUrl+listing.output.relativeHref}><img class="self-center" src={"/images"+listing.output.iconHref} alt=""></a>
+                                {listing.output.name}
+                            </div>
+
+                            <!-- The amount (on the right) -->
+                            <div class="self-center ml-3">
+                                x{listing.output.amount}
+                            </div>
                         </div>
                     </td> 
                 </tr>

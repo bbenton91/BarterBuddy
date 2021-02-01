@@ -34,7 +34,6 @@ export class ParseAmmo{
       console.log("Starting fetch for "+url);
 
       const response = await fetch(url);
-      console.log("hello?")
       var text = await response.text()
 
       console.log("Starting parse");
@@ -98,7 +97,6 @@ export class ParseAmmo{
     var imgName = ""
     if (match != null && match.length > 0)
       imgName = match[0]
-    console.log(imgName)
     return { name: name, iconHref: imgName };
   }
 
@@ -124,7 +122,7 @@ export class ParseAmmo{
         // let re = RegExp()
         var src = names[nameIndex]?.querySelector("img")?.src ?? "";
         if (src === "") {
-          console.log("we are continuing")
+          console.log("src is empty for "+name)
           continue;
         }
         var imgName = src.match(re)[0]
