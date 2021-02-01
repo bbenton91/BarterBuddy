@@ -97,6 +97,7 @@ export class ParseAmmo{
     var imgName = ""
     if (match != null && match.length > 0)
       imgName = match[0]
+    
     return { name: name, iconHref: imgName };
   }
 
