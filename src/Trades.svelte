@@ -1,9 +1,12 @@
 <script lang="ts">
-    import { filteredListings } from './stores';
+    import { filteredListings, listings } from './stores';
     import type { Item } from './ParseAmmo';
-    import Image from "svelte-image";
+    import InputItem from './InputItem.svelte'
+import Trader from './Trader.svelte';
+import OutputItem from './OutputItem.svelte';
+    // import Image from "svelte-image";
     
-    export let gamepediaUrl;
+    export let gamepediaUrl:string;
 </script>
 
 <style>
@@ -20,44 +23,17 @@
 
                     <!-- This is the input items -->
                     <td class="border-2 border-color p-5 w-1/6">
-                        {#each listing.inputs as inputItem}
-                            <div class="flex justify-center mb-4">
-                                <!-- The picture and name -->
-                                <div class="flex flex-col justify-items-center">
-                                    <a class="self-center" href={gamepediaUrl+inputItem.relativeHref}><img class="self-center" src={"/images"+inputItem.iconHref} alt=""></a>
-                                    {inputItem.name}
-                                </div>
-
-                                <!-- The amount (on the right) -->
-                                <div class="self-center ml-3">
-                                    x{inputItem.amount}
-                                </div>
-                            </div>
-                        {/each}
+                       <InputItem inputs={listing.inputs} gamepediaUrl={gamepediaUrl} />
                     </td>
 
                     <!-- This is the trader -->
                     <td class="border-2 border-color p-5 w-1/6">
-                        <div class="flex flex-col justify-items-center">
-                            <img class="self-center" src={"/images"+listing.trader.iconHref} alt="">
-                            {listing.trader.name}
-                        </div>
+                        <Trader trader={listing.trader} gamepediaUrl={gamepediaUrl} />
                     </td> 
 
                     <!-- This is the output item -->
                     <td class="border-2 border-color p-5 w-1/6">
-                        <div class="flex flex justify-center">
-                            <!-- The picture and name -->
-                            <div class="flex flex-col justify-items-center">
-                                <a class="self-center" href={gamepediaUrl+listing.output.relativeHref}><img class="self-center" src={"/images"+listing.output.iconHref} alt=""></a>
-                                {listing.output.name}
-                            </div>
-
-                            <!-- The amount (on the right) -->
-                            <div class="self-center ml-3">
-                                x{listing.output.amount}
-                            </div>
-                        </div>
+                        <OutputItem output={listing.output} gamepediaUrl={gamepediaUrl} />
                     </td> 
                 </tr>
             {/each}

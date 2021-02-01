@@ -1,7 +1,7 @@
 <script lang="ts">
     import { filteredListings, listings } from './stores'; 
 
-    var timeoutFunc;
+    var timeoutFunc:number;
     var searchText = "";
 
     function filter(text:string){
@@ -17,5 +17,5 @@
 </script>
 
 <main>
-    <input class="text-gray-400 bg-gray-800 rounded mt-5 mb-5 pl-1 pr-1 pt-1 pb-1 w-80" type="text" bind:value={searchText} on:input={() => filter(searchText)} placeholder="Search Here">
+    <input class="text-gray-400 bg-gray-800 rounded mt-5 mb-5 pl-1 pr-1 pt-1 pb-1 w-40 lg:w-80" type="text" bind:value={searchText} on:input={() => filter(searchText)} placeholder="Search Here">
 </main>
