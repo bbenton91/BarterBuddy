@@ -39,7 +39,7 @@
                     <!-- This is the trader -->
                     <td class="border-2 border-color p-5 w-1/6">
                         <div class="flex flex-col justify-items-center">
-                            <img class="self-center" src={listing.trader.iconHref} alt="">
+                            <img class="self-center" src={"/images"+listing.trader.iconHref} alt="">
                             {listing.trader.name}
                         </div>
                     </td> 

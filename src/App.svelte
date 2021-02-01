@@ -11,7 +11,7 @@
 	export const gamepediaUrl = "https://escapefromtarkov.gamepedia.com";
 	const baseUrl = "/escapefromtarkov.gamepedia.com";
 	const ammoUrl = "/Ammunition";
-	const barterUrl = "https://escapefromtarkov.gamepedia.com/Barter_trades"
+	const barterUrl = "/escapefromtarkov.gamepedia.com/Barter_trades"
 
 	console.log("Test");
 	// ParseAmmo.Parse(corsRedirect+baseUrl+ammoUrl);
@@ -19,7 +19,7 @@
 	// This actuall works but it wants to complain
 	document.body.classList = [];
 
-	ParseAmmo.Parse(barterUrl).then(data => {$listings = data; $filteredListings = data})
+	ParseAmmo.Parse(corsRedirect + barterUrl).then(data => {$listings = data; $filteredListings = data})
 </script>
 
 <style>

@@ -17,10 +17,14 @@ export type Trade = {
   output: Item
 }
 
+const re = /\/[0-9a-zA-Z.%_-]+\.(png|gif)/gmi
+
 export class ParseAmmo{
 
   static async Parse2(url: string) {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {"Content-Type": "text"}
+    });
     var text = await response.text()
 
     let html = document.createElement('html');
@@ -84,8 +88,10 @@ export class ParseAmmo{
   private static parseTrader(element: HTMLTableColElement): Trader{
     let name = element.querySelector("a").getAttribute("title");
     let iconHref = element.querySelector("img").src
-
-    return { name: name, iconHref: iconHref };
+    var src = element?.querySelector("img")?.src ?? "";
+    var imgName = src.match(re)[0]
+    console.log(imgName)
+    return { name: name, iconHref: imgName };
   }
 
   private static parseInputItems(element: HTMLTableColElement):Array<Item> {
@@ -108,7 +114,6 @@ export class ParseAmmo{
       if (name != lastName) {
         lastName = name
         // let re = RegExp()
-        let re = /\/[0-9a-zA-Z.%_-]+\.(png|gif)/gmi
         var src = names[nameIndex]?.querySelector("img")?.src ?? "";
         if (src === "") {
           console.log("we are continuing")
