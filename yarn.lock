@@ -2350,6 +2350,11 @@ svelte-image@^0.2.9:
     svelte-waypoint latest
     svgo "^1.2.2"
 
+svelte-loading-spinners@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/svelte-loading-spinners/-/svelte-loading-spinners-0.1.4.tgz#e752240c7220ed311df5d8d5e28541d2a9de6017"
+  integrity sha512-r/0Hs9cxtRLh2RwBwwEat1V1M1kypaGFPllM7XdZSH299JTed994B6zMHJ1Z5Ug8B9Tl2bs+VOy8Vz5EFWy5Ww==
+
 svelte-preprocess@^4.0.0, svelte-preprocess@^4.6.1:
   version "4.6.5"
   resolved "https://registry.yarnpkg.com/svelte-preprocess/-/svelte-preprocess-4.6.5.tgz#65cd8e26241ce7e53a8c306472cefcb494a550f1"

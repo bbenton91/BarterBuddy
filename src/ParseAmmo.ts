@@ -17,36 +17,40 @@ export type Trade = {
   output: Item
 }
 
+const corsRedirect = "https://cors-anywhere.herokuapp.com";
+const barterUrl = "/escapefromtarkov.gamepedia.com/Barter_trades"
+const craftUrl = "/escapefromtarkov.gamepedia.com/Crafts"
 const re = /\/[0-9a-zA-Z.%_-]+\.(png|gif)/gmi
 
 export class ParseAmmo{
 
-  static async Parse2(url: string) {
-    const response = await fetch(url, {
-      headers: {"Content-Type": "text"}
-    });
-    var text = await response.text()
+  static async GetBartersAndCrafts(): Promise<Array<Trade>>{
+    let urls = [corsRedirect + barterUrl, corsRedirect + craftUrl]
+    var trades: Array<Trade> = [];
 
-    let html = document.createElement('html');
-    html.innerHTML = text;
+    for (let index = 0; index < urls.length; index++) {
+      const url = urls[index];
 
-    let tables = html.querySelector("#mw-content-text").querySelectorAll("table"); // Get the tables
-    let tableBodies = Array.from(tables).map(table => table.querySelector("tbody")); // Get the body from each
-    let filteredBodies = Array.from(tableBodies).filter(body => body.childElementCount > 10); // Filter the bodies to make sure we get only the trades (should be 7 of them)
+      console.log("Starting fetch for "+url);
 
-    console.log(filteredBodies.length)
+      const response = await fetch(url);
+      console.log("hello?")
+      var text = await response.text()
+
+      console.log("Starting parse");
+
+      trades = trades.concat(ParseAmmo.gatherTrades(text))
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+      
+    return trades;
   }
 
-  static async Parse(url: string): Promise<Array<Trade>>{
-    console.log("Starting fetch");
-
-    const response = await fetch(url);
-    var text = await response.text()
-
-    console.log("Starting parse");
-
+  private static gatherTrades(textContent: string): Array<Trade> {
+    
     let html = document.createElement('html');
-    html.innerHTML = text;
+    html.innerHTML = textContent;
     let tables = html.querySelector("#mw-content-text").querySelectorAll("table");
     var trades: Array<Trade> = [];
 
@@ -60,7 +64,7 @@ export class ParseAmmo{
 
         // If we have less than 10 rows we can just ignore the entire table.
         // The trade table has 100s of rows
-        if (rows.length < 10)
+        if (rows.length < 1)
           continue;
 
         // Then we loop over each row. Skip the first because it's a header row
@@ -86,10 +90,14 @@ export class ParseAmmo{
   }
 
   private static parseTrader(element: HTMLTableColElement): Trader{
-    let name = element.querySelector("a").getAttribute("title");
-    let iconHref = element.querySelector("img").src
+    var links = element.querySelectorAll("a");
+    var link = Array.from(links).filter(x => x.innerText !== "")[0]
+    let name = link.text;
     var src = element?.querySelector("img")?.src ?? "";
-    var imgName = src.match(re)[0]
+    var match = src.match(re)
+    var imgName = ""
+    if (match != null && match.length > 0)
+      imgName = match[0]
     console.log(imgName)
     return { name: name, iconHref: imgName };
   }
