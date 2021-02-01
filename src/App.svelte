@@ -19,7 +19,7 @@
 	// This actuall works but it wants to complain
 	document.body.classList = [];
 
-	ParseAmmo.Parse(corsRedirect + barterUrl).then(data => {$listings = data; $filteredListings = data})
+	// ParseAmmo.Parse(corsRedirect + barterUrl).then(data => {$listings = data; $filteredListings = data})
 </script>
 
 <style>
@@ -36,7 +36,7 @@
 	<h1 class="uppercase text-6xl leading-normal font-thin text-svelte">Barter Buddy</h1>
 	<h2 class="text-2xl leading-normal font-thin text-svelte">A Barter Searcher for Tarkov</h2>
 	<br><br>
-	<!-- <button class="w-40 h-14 bg-gray-700 rounded text-svelte" on:click|once={() => ParseAmmo.Parse(corsRedirect + barterUrl).then(data => {$listings = data; $filteredListings = data})}>Load Data</button> -->
+	<button class="w-40 h-14 bg-gray-700 rounded text-svelte" on:click|once={() => ParseAmmo.Parse(corsRedirect + barterUrl).then(data => {$listings = data; $filteredListings = data})}>Load Data</button>
 	<!-- <button class="w-40 h-14 bg-gray-700 rounded text-svelte" on:click|once={() => ParseAmmo.Parse2(corsRedirect + barterUrl)}>Load Data2</button> -->
 	<Search />
 	<Trades gamepediaUrl={gamepediaUrl}/>

@@ -24,7 +24,7 @@
                             <div class="flex justify-center mb-4">
                                 <!-- The picture and name -->
                                 <div class="flex flex-col justify-items-center">
-                                    <a class="self-center" href={gamepediaUrl+inputItem.relativeHref}><img class="self-center" src={inputItem.iconHref} alt=""></a>
+                                    <a class="self-center" href={gamepediaUrl+inputItem.relativeHref}><img class="self-center" src={"/images"+inputItem.iconHref} alt=""></a>
                                     {inputItem.name}
                                 </div>
 
@@ -47,7 +47,7 @@
                     <!-- This is the output item -->
                     <td class="border-2 border-color p-5 w-1/6">
                         <div class="flex flex-col justify-items-center">
-                            <img class="self-center" src={listing.output.iconHref} alt="">
+                            <img class="self-center" src={"/images"+listing.output.iconHref} alt="">
                             {listing.output.name}
                         </div>
                     </td> 

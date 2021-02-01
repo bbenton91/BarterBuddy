@@ -34,9 +34,12 @@ export class ParseAmmo{
   }
 
   static async Parse(url: string): Promise<Array<Trade>>{
-    
+    console.log("Starting fetch");
+
     const response = await fetch(url);
     var text = await response.text()
+
+    console.log("Starting parse");
 
     let html = document.createElement('html');
     html.innerHTML = text;
@@ -66,9 +69,6 @@ export class ParseAmmo{
           var traderElem = (row.children[2] as HTMLTableColElement);
           var outputElem = (row.children[4] as HTMLTableColElement);
 
-          // console.log(inputElem);
-          // console.log(inputElem.childNodes)
-          // console.log(typeof (inputElem.childNodes[1]))
           let inputItems = ParseAmmo.parseInputItems(inputElem);
           let trader = ParseAmmo.parseTrader(traderElem);
           let outputItem = ParseAmmo.parseInputItems(outputElem)[0];
@@ -107,9 +107,16 @@ export class ParseAmmo{
 
       if (name != lastName) {
         lastName = name
-        var img = names[nameIndex]?.querySelector("img")?.src;
+        // let re = RegExp()
+        let re = /\/[0-9a-zA-Z.%_-]+\.(png|gif)/gmi
+        var src = names[nameIndex]?.querySelector("img")?.src ?? "";
+        if (src === "") {
+          console.log("we are continuing")
+          continue;
+        }
+        var imgName = src.match(re)[0]
         var amount = amountIndex < amounts.length ? amounts[amountIndex] : 1
-        var item: Item = { name: lastName, amount: amount, iconHref: img, relativeHref: names[nameIndex].getAttribute("href") }
+        var item: Item = { name: lastName, amount: amount, iconHref: imgName, relativeHref: names[nameIndex].getAttribute("href") }
         items.push(item);
         amountIndex++;
       }
