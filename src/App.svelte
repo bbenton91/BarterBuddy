@@ -38,7 +38,7 @@
 		// If our cached data is empty, fetch from the server
 		if(data.length < 1){
 			console.log("fetching server data");
-			var response = await fetch("https://76.110.59.93:9775/get-data")
+			var response = await fetch("https://76.110.59.93:2375/get-data")
 			var responseText = await response.text();
 			let trades:Array<Trade> = JSON.parse(responseText)
 			setCachedData('trades', responseText);
