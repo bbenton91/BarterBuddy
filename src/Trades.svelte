@@ -2,8 +2,8 @@
     import { filteredListings, listings } from './stores';
     import type { Item } from './ParseAmmo';
     import InputItem from './InputItem.svelte'
-import Trader from './Trader.svelte';
-import OutputItem from './OutputItem.svelte';
+    import Trader from './Trader.svelte';
+    import OutputItem from './OutputItem.svelte';
     // import Image from "svelte-image";
     
     export let gamepediaUrl:string;

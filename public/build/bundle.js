@@ -4,6 +4,9 @@ var app = (function () {
     'use strict';
 
     function noop() { }
+    function is_promise(value) {
+        return value && typeof value === 'object' && typeof value.then === 'function';
+    }
     function add_location(element, file, line, column, char) {
         element.__svelte_meta = {
             loc: { file, line, column, char }
@@ -213,6 +216,77 @@ var app = (function () {
                 }
             });
             block.o(local);
+        }
+    }
+
+    function handle_promise(promise, info) {
+        const token = info.token = {};
+        function update(type, index, key, value) {
+            if (info.token !== token)
+                return;
+            info.resolved = value;
+            let child_ctx = info.ctx;
+            if (key !== undefined) {
+                child_ctx = child_ctx.slice();
+                child_ctx[key] = value;
+            }
+            const block = type && (info.current = type)(child_ctx);
+            let needs_flush = false;
+            if (info.block) {
+                if (info.blocks) {
+                    info.blocks.forEach((block, i) => {
+                        if (i !== index && block) {
+                            group_outros();
+                            transition_out(block, 1, 1, () => {
+                                if (info.blocks[i] === block) {
+                                    info.blocks[i] = null;
+                                }
+                            });
+                            check_outros();
+                        }
+                    });
+                }
+                else {
+                    info.block.d(1);
+                }
+                block.c();
+                transition_in(block, 1);
+                block.m(info.mount(), info.anchor);
+                needs_flush = true;
+            }
+            info.block = block;
+            if (info.blocks)
+                info.blocks[index] = block;
+            if (needs_flush) {
+                flush();
+            }
+        }
+        if (is_promise(promise)) {
+            const current_component = get_current_component();
+            promise.then(value => {
+                set_current_component(current_component);
+                update(info.then, 1, info.value, value);
+                set_current_component(null);
+            }, error => {
+                set_current_component(current_component);
+                update(info.catch, 2, info.error, error);
+                set_current_component(null);
+                if (!info.hasCatch) {
+                    throw error;
+                }
+            });
+            // if we previously had a then/catch block, destroy it
+            if (info.current !== info.pending) {
+                update(info.pending, 0);
+                return true;
+            }
+        }
+        else {
+            if (info.current !== info.then) {
+                update(info.then, 1, info.value, promise);
+                return true;
+            }
+            info.resolved = promise;
         }
     }
 
@@ -660,9 +734,10 @@ var app = (function () {
             return trades;
         }
         static gatherTrades(textContent) {
+            var _a, _b;
             let html = document.createElement('html');
             html.innerHTML = textContent;
-            let tables = html.querySelector("#mw-content-text").querySelectorAll("table");
+            let tables = (_b = (_a = html.querySelector("#mw-content-text")) === null || _a === void 0 ? void 0 : _a.querySelectorAll("table")) !== null && _b !== void 0 ? _b : [];
             var trades = [];
             // For each table we get the tbody inside.
             for (let index = 0; index < tables.length; index++) {
@@ -693,43 +768,49 @@ var app = (function () {
         }
         static parseTrader(element) {
             var _a, _b;
-            var links = element.querySelectorAll("a");
-            var link = Array.from(links).filter(x => x.innerText !== "")[0];
-            let name = link.text;
-            var src = (_b = (_a = element === null || element === void 0 ? void 0 : element.querySelector("img")) === null || _a === void 0 ? void 0 : _a.src) !== null && _b !== void 0 ? _b : "";
+            var links = element.querySelectorAll("a"); // Get all images
+            var link = Array.from(links).filter(x => x.innerText !== "")[0]; // Filter out the empty ones
+            let name = link.text; // Then we can get the actual name (like prapor ll1)
+            let relativeHref = link.href;
+            var src = (_b = (_a = element === null || element === void 0 ? void 0 : element.querySelector("img")) === null || _a === void 0 ? void 0 : _a.src) !== null && _b !== void 0 ? _b : ""; // Get the img source
+            // Then we pull the image name from the img url. For example: 
+            // from 'https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/f/fc/Prapor_1_icon.png/revision/latest/scale-to-width-down/130?cb=20180822110125'
+            // we want just 'Prapor_1_icon.png'. This regex will do that for us
             var match = src.match(re);
             var imgName = "";
             if (match != null && match.length > 0)
                 imgName = match[0];
-            return { name: name, iconHref: imgName };
+            return { name: name, iconHref: imgName, relativeHref: relativeHref };
         }
         static parseInputItems(element) {
-            var _a, _b, _c, _d;
+            var _a, _b, _c, _d, _e, _f, _g;
             var children = Array.from(element.childNodes);
             var names = Array.from(element.querySelectorAll("a[title]")).filter(x => x.querySelector("img") !== null);
             var amounts = children
                 .filter(x => x.nodeType == Node.TEXT_NODE) // Only gets text
-                .filter(x => !ParseAmmo.isEmptyOrSpaces(x.textContent) && ParseAmmo.isValidInt(x.textContent.trim().slice(1))) // gets valid non-empty numbers. We do slice(1) because numbers are in the format of x1, x60, etc
-                .map(x => parseInt(x.textContent.trim().slice(1)));
+                .filter(x => { var _a, _b, _c; return !ParseAmmo.isEmptyOrSpaces((_a = x.textContent) !== null && _a !== void 0 ? _a : "") && ParseAmmo.isValidInt((_c = (_b = x.textContent) === null || _b === void 0 ? void 0 : _b.trim().slice(1)) !== null && _c !== void 0 ? _c : ""); }) // gets valid non-empty numbers. We do slice(1) because numbers are in the format of x1, x60, etc
+                .map(x => { var _a, _b; return parseInt((_b = (_a = x.textContent) === null || _a === void 0 ? void 0 : _a.trim().slice(1)) !== null && _b !== void 0 ? _b : ""); });
             var items = [];
             var amountIndex = 0;
             var nameIndex = 0;
             var lastName = "";
             while (nameIndex >= 0 && nameIndex < names.length) {
-                var name = names[nameIndex].getAttribute("title").trim();
+                var name = (_b = (_a = names[nameIndex].getAttribute("title")) === null || _a === void 0 ? void 0 : _a.trim()) !== null && _b !== void 0 ? _b : "";
                 if (name != lastName) {
                     lastName = name;
                     // let re = RegExp()
-                    var src = (_c = (_b = (_a = names[nameIndex]) === null || _a === void 0 ? void 0 : _a.querySelector("img")) === null || _b === void 0 ? void 0 : _b.src) !== null && _c !== void 0 ? _c : "";
+                    var src = (_e = (_d = (_c = names[nameIndex]) === null || _c === void 0 ? void 0 : _c.querySelector("img")) === null || _d === void 0 ? void 0 : _d.src) !== null && _e !== void 0 ? _e : "";
                     if (src === "") {
                         console.log("src is empty for " + name);
                         console.log(names[nameIndex]);
-                        console.log((_d = names[nameIndex]) === null || _d === void 0 ? void 0 : _d.querySelector("img"));
+                        console.log((_f = names[nameIndex]) === null || _f === void 0 ? void 0 : _f.querySelector("img"));
                         continue;
                     }
-                    var imgName = src.match(re)[0];
+                    var match = src.match(re);
+                    var imgName = match != null && match.length > 0 ? match[0] : "";
                     var amount = amountIndex < amounts.length ? amounts[amountIndex] : 1;
-                    var item = { name: lastName, amount: amount, iconHref: imgName, relativeHref: names[nameIndex].getAttribute("href") };
+                    var href = (_g = names[nameIndex].getAttribute("href")) !== null && _g !== void 0 ? _g : "";
+                    var item = { name: lastName, amount: amount, iconHref: imgName, relativeHref: href };
                     items.push(item);
                     amountIndex++;
                 }
@@ -1099,8 +1180,11 @@ var app = (function () {
 
     function create_fragment$3(ctx) {
     	let div;
+    	let a;
     	let img;
     	let img_src_value;
+    	let img_alt_value;
+    	let a_href_value;
     	let t0;
     	let t1_value = /*trader*/ ctx[0].name + "";
     	let t1;
@@ -1108,14 +1192,17 @@ var app = (function () {
     	const block = {
     		c: function create() {
     			div = element("div");
+    			a = element("a");
     			img = element("img");
     			t0 = space();
     			t1 = text(t1_value);
     			attr_dev(img, "class", "self-center");
     			if (img.src !== (img_src_value = "/images" + /*trader*/ ctx[0].iconHref)) attr_dev(img, "src", img_src_value);
-    			attr_dev(img, "alt", "");
-    			add_location(img, file$2, 6, 4, 134);
-    			attr_dev(div, "class", "flex flex-col justify-items-center");
+    			attr_dev(img, "alt", img_alt_value = /*trader*/ ctx[0].name);
+    			add_location(img, file$2, 7, 8, 200);
+    			attr_dev(a, "href", a_href_value = /*gamepediaUrl*/ ctx[1] + /*trader*/ ctx[0].relativeHref);
+    			add_location(a, file$2, 6, 4, 147);
+    			attr_dev(div, "class", "flex flex-col justify-items-center items-center");
     			add_location(div, file$2, 5, 0, 80);
     		},
     		l: function claim(nodes) {
@@ -1123,13 +1210,22 @@ var app = (function () {
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
-    			append_dev(div, img);
+    			append_dev(div, a);
+    			append_dev(a, img);
     			append_dev(div, t0);
     			append_dev(div, t1);
     		},
     		p: function update(ctx, [dirty]) {
     			if (dirty & /*trader*/ 1 && img.src !== (img_src_value = "/images" + /*trader*/ ctx[0].iconHref)) {
     				attr_dev(img, "src", img_src_value);
+    			}
+
+    			if (dirty & /*trader*/ 1 && img_alt_value !== (img_alt_value = /*trader*/ ctx[0].name)) {
+    				attr_dev(img, "alt", img_alt_value);
+    			}
+
+    			if (dirty & /*gamepediaUrl, trader*/ 3 && a_href_value !== (a_href_value = /*gamepediaUrl*/ ctx[1] + /*trader*/ ctx[0].relativeHref)) {
+    				attr_dev(a, "href", a_href_value);
     			}
 
     			if (dirty & /*trader*/ 1 && t1_value !== (t1_value = /*trader*/ ctx[0].name + "")) set_data_dev(t1, t1_value);
@@ -1396,7 +1492,7 @@ var app = (function () {
     	return child_ctx;
     }
 
-    // (18:12) {#each $filteredListings as listing}
+    // (17:12) {#each $filteredListings as listing}
     function create_each_block$1(ctx) {
     	let tr;
     	let td0;
@@ -1446,14 +1542,14 @@ var app = (function () {
     			td2 = element("td");
     			create_component(outputitem.$$.fragment);
     			t2 = space();
-    			attr_dev(td0, "class", "border-2 border-color p-5 w-1/6 svelte-11tmax0");
-    			add_location(td0, file$4, 21, 20, 607);
-    			attr_dev(td1, "class", "border-2 border-color p-5 w-1/6 svelte-11tmax0");
-    			add_location(td1, file$4, 26, 20, 841);
-    			attr_dev(td2, "class", "border-2 border-color p-5 w-1/6 svelte-11tmax0");
-    			add_location(td2, file$4, 31, 20, 1079);
+    			attr_dev(td0, "class", "border-2 border-color p-5 w-1/6 svelte-b2iufc");
+    			add_location(td0, file$4, 20, 20, 606);
+    			attr_dev(td1, "class", "border-2 border-color p-5 w-1/6 svelte-b2iufc");
+    			add_location(td1, file$4, 25, 20, 840);
+    			attr_dev(td2, "class", "border-2 border-color p-5 w-1/6 svelte-b2iufc");
+    			add_location(td2, file$4, 30, 20, 1078);
     			attr_dev(tr, "class", "border-2 text-svelte");
-    			add_location(tr, file$4, 18, 16, 496);
+    			add_location(tr, file$4, 17, 16, 495);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, tr, anchor);
@@ -1507,7 +1603,7 @@ var app = (function () {
     		block,
     		id: create_each_block$1.name,
     		type: "each",
-    		source: "(18:12) {#each $filteredListings as listing}",
+    		source: "(17:12) {#each $filteredListings as listing}",
     		ctx
     	});
 
@@ -1541,10 +1637,10 @@ var app = (function () {
     				each_blocks[i].c();
     			}
 
-    			add_location(tbody, file$4, 16, 8, 421);
-    			add_location(table, file$4, 15, 4, 404);
+    			add_location(tbody, file$4, 15, 8, 420);
+    			add_location(table, file$4, 14, 4, 403);
     			attr_dev(main, "class", "p-4 mx-auto text-center w-4/6");
-    			add_location(main, file$4, 14, 0, 354);
+    			add_location(main, file$4, 13, 0, 353);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -1844,16 +1940,16 @@ var app = (function () {
     	return child_ctx;
     }
 
-    // (46:2) {#each range(3, 1) as version}
+    // (45:2) {#each range(3, 1) as version}
     function create_each_block$2(ctx) {
     	let div;
 
     	const block = {
     		c: function create() {
     			div = element("div");
-    			attr_dev(div, "class", "circle svelte-je6tgr");
+    			attr_dev(div, "class", "circle svelte-vcw43z");
     			set_style(div, "animation-delay", /*durationNum*/ ctx[5] / 3 * (/*version*/ ctx[6] - 1) + /*durationUnit*/ ctx[4]);
-    			add_location(div, file$6, 46, 4, 919);
+    			add_location(div, file$6, 45, 4, 918);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -1868,7 +1964,7 @@ var app = (function () {
     		block,
     		id: create_each_block$2.name,
     		type: "each",
-    		source: "(46:2) {#each range(3, 1) as version}",
+    		source: "(45:2) {#each range(3, 1) as version}",
     		ctx
     	});
 
@@ -1893,11 +1989,11 @@ var app = (function () {
     				each_blocks[i].c();
     			}
 
-    			attr_dev(div, "class", "wrapper svelte-je6tgr");
+    			attr_dev(div, "class", "wrapper svelte-vcw43z");
     			set_style(div, "--size", /*size*/ ctx[0] + /*unit*/ ctx[2]);
     			set_style(div, "--color", /*color*/ ctx[1]);
     			set_style(div, "--duration", /*duration*/ ctx[3]);
-    			add_location(div, file$6, 44, 0, 786);
+    			add_location(div, file$6, 43, 0, 785);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -2065,8 +2161,41 @@ var app = (function () {
     const { console: console_1$1 } = globals;
     const file$7 = "src\\App.svelte";
 
-    // (40:1) {:else}
-    function create_else_block$1(ctx) {
+    // (103:1) {:catch error}
+    function create_catch_block(ctx) {
+    	let div;
+
+    	const block = {
+    		c: function create() {
+    			div = element("div");
+    			div.textContent = "There was a problem. Try again later.";
+    			attr_dev(div, "class", "flex justify-center items-center h-40 text-red-400");
+    			add_location(div, file$7, 103, 2, 4759);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, div, anchor);
+    		},
+    		p: noop,
+    		i: noop,
+    		o: noop,
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(div);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_catch_block.name,
+    		type: "catch",
+    		source: "(103:1) {:catch error}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (101:1) {:then value}
+    function create_then_block(ctx) {
     	let trades;
     	let current;
 
@@ -2100,17 +2229,17 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_else_block$1.name,
-    		type: "else",
-    		source: "(40:1) {:else}",
+    		id: create_then_block.name,
+    		type: "then",
+    		source: "(101:1) {:then value}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (36:1) {#if $listings.length <= 0}
-    function create_if_block$1(ctx) {
+    // (97:18)    <div class="flex justify-center items-center h-40">    <Jumper size="60" color="#FF3E00" unit="px" duration="1s"></Jumper>   </div>  {:then value}
+    function create_pending_block(ctx) {
     	let div;
     	let jumper;
     	let current;
@@ -2130,7 +2259,7 @@ var app = (function () {
     			div = element("div");
     			create_component(jumper.$$.fragment);
     			attr_dev(div, "class", "flex justify-center items-center h-40");
-    			add_location(div, file$7, 36, 2, 1638);
+    			add_location(div, file$7, 97, 2, 4552);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -2155,9 +2284,9 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block$1.name,
-    		type: "if",
-    		source: "(36:1) {#if $listings.length <= 0}",
+    		id: create_pending_block.name,
+    		type: "pending",
+    		source: "(97:18)    <div class=\\\"flex justify-center items-center h-40\\\">    <Jumper size=\\\"60\\\" color=\\\"#FF3E00\\\" unit=\\\"px\\\" duration=\\\"1s\\\"></Jumper>   </div>  {:then value}",
     		ctx
     	});
 
@@ -2177,21 +2306,24 @@ var app = (function () {
     	let t5;
     	let search;
     	let t6;
-    	let current_block_type_index;
-    	let if_block;
     	let current;
     	tailwindcss = new Tailwindcss({ $$inline: true });
     	search = new Search({ $$inline: true });
-    	const if_block_creators = [create_if_block$1, create_else_block$1];
-    	const if_blocks = [];
 
-    	function select_block_type(ctx, dirty) {
-    		if (/*$listings*/ ctx[1].length <= 0) return 0;
-    		return 1;
-    	}
+    	let info = {
+    		ctx,
+    		current: null,
+    		token: null,
+    		hasCatch: true,
+    		pending: create_pending_block,
+    		then: create_then_block,
+    		catch: create_catch_block,
+    		value: 8,
+    		error: 9,
+    		blocks: [,,,]
+    	};
 
-    	current_block_type_index = select_block_type(ctx);
-    	if_block = if_blocks[current_block_type_index] = if_block_creators[current_block_type_index](ctx);
+    	handle_promise(/*response*/ ctx[1], info);
 
     	const block = {
     		c: function create() {
@@ -2209,15 +2341,15 @@ var app = (function () {
     			t5 = space();
     			create_component(search.$$.fragment);
     			t6 = space();
-    			if_block.c();
+    			info.block.c();
     			attr_dev(h1, "class", "uppercase text-6xl leading-normal font-thin text-svelte");
-    			add_location(h1, file$7, 28, 1, 1056);
+    			add_location(h1, file$7, 89, 1, 3980);
     			attr_dev(h2, "class", "text-2xl leading-normal font-thin text-svelte");
-    			add_location(h2, file$7, 29, 1, 1143);
-    			add_location(br0, file$7, 30, 1, 1236);
-    			add_location(br1, file$7, 30, 5, 1240);
+    			add_location(h2, file$7, 90, 1, 4067);
+    			add_location(br0, file$7, 91, 1, 4160);
+    			add_location(br1, file$7, 91, 5, 4164);
     			attr_dev(main, "class", "p-4 mx-auto w-5/6 text-center");
-    			add_location(main, file$7, 27, 0, 1010);
+    			add_location(main, file$7, 88, 0, 3934);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -2235,47 +2367,36 @@ var app = (function () {
     			append_dev(main, t5);
     			mount_component(search, main, null);
     			append_dev(main, t6);
-    			if_blocks[current_block_type_index].m(main, null);
+    			info.block.m(main, info.anchor = null);
+    			info.mount = () => main;
+    			info.anchor = null;
     			current = true;
     		},
-    		p: function update(ctx, [dirty]) {
-    			let previous_block_index = current_block_type_index;
-    			current_block_type_index = select_block_type(ctx);
+    		p: function update(new_ctx, [dirty]) {
+    			ctx = new_ctx;
 
-    			if (current_block_type_index === previous_block_index) {
-    				if_blocks[current_block_type_index].p(ctx, dirty);
-    			} else {
-    				group_outros();
-
-    				transition_out(if_blocks[previous_block_index], 1, 1, () => {
-    					if_blocks[previous_block_index] = null;
-    				});
-
-    				check_outros();
-    				if_block = if_blocks[current_block_type_index];
-
-    				if (!if_block) {
-    					if_block = if_blocks[current_block_type_index] = if_block_creators[current_block_type_index](ctx);
-    					if_block.c();
-    				} else {
-    					if_block.p(ctx, dirty);
-    				}
-
-    				transition_in(if_block, 1);
-    				if_block.m(main, null);
+    			{
+    				const child_ctx = ctx.slice();
+    				child_ctx[8] = child_ctx[9] = info.resolved;
+    				info.block.p(child_ctx, dirty);
     			}
     		},
     		i: function intro(local) {
     			if (current) return;
     			transition_in(tailwindcss.$$.fragment, local);
     			transition_in(search.$$.fragment, local);
-    			transition_in(if_block);
+    			transition_in(info.block);
     			current = true;
     		},
     		o: function outro(local) {
     			transition_out(tailwindcss.$$.fragment, local);
     			transition_out(search.$$.fragment, local);
-    			transition_out(if_block);
+
+    			for (let i = 0; i < 3; i += 1) {
+    				const block = info.blocks[i];
+    				transition_out(block);
+    			}
+
     			current = false;
     		},
     		d: function destroy(detaching) {
@@ -2283,7 +2404,9 @@ var app = (function () {
     			if (detaching) detach_dev(t0);
     			if (detaching) detach_dev(main);
     			destroy_component(search);
-    			if_blocks[current_block_type_index].d();
+    			info.block.d();
+    			info.token = null;
+    			info = null;
     		}
     	};
 
@@ -2302,24 +2425,126 @@ var app = (function () {
     const ammoUrl = "/Ammunition";
     const barterUrl$1 = "/escapefromtarkov.gamepedia.com/Barter_trades";
 
+    /**
+     * Tries to get cached trades. If successful, will return an Array of Trade objects. Otherwise, an empty array is returned
+     * @param name The name of the object to retrieve
+     * @param cachelife The life of the cache. If the current time minus the stored data's life is less than this, we return empty
+     */
+    function getCachedData(name, cachelife) {
+    	var _a;
+    	var cachelife = cachelife * 1000;
+
+    	var cachedString = (_a = localStorage.getItem(name)) !== null && _a !== void 0
+    	? _a
+    	: "";
+
+    	if (cachedString !== "") {
+    		var cachedData = JSON.parse(cachedString);
+    		var trades = JSON.parse(cachedData.data);
+    		var expired = Date.now() > cachedData.cacheTime + cachelife;
+
+    		if (expired) {
+    			localStorage.removeItem(name);
+    			return [];
+    		}
+
+    		return trades;
+    	}
+
+    	return [];
+    }
+
+    function setCachedData(name, data) {
+    	var item = { data, cacheTime: Date.now() };
+    	localStorage.setItem(name, JSON.stringify(item));
+    	console.log("data is set");
+    }
+
     function instance$8($$self, $$props, $$invalidate) {
     	let $listings;
     	let $filteredListings;
     	validate_store(listings, "listings");
-    	component_subscribe($$self, listings, $$value => $$invalidate(1, $listings = $$value));
+    	component_subscribe($$self, listings, $$value => $$invalidate(3, $listings = $$value));
     	validate_store(filteredListings, "filteredListings");
-    	component_subscribe($$self, filteredListings, $$value => $$invalidate(3, $filteredListings = $$value));
+    	component_subscribe($$self, filteredListings, $$value => $$invalidate(4, $filteredListings = $$value));
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots("App", slots, []);
+
+    	var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
+    		function adopt(value) {
+    			return value instanceof P
+    			? value
+    			: new P(function (resolve) {
+    						resolve(value);
+    					});
+    		}
+
+    		return new (P || (P = Promise))(function (resolve, reject) {
+    				function fulfilled(value) {
+    					try {
+    						step(generator.next(value));
+    					} catch(e) {
+    						reject(e);
+    					}
+    				}
+
+    				function rejected(value) {
+    					try {
+    						step(generator["throw"](value));
+    					} catch(e) {
+    						reject(e);
+    					}
+    				}
+
+    				function step(result) {
+    					result.done
+    					? resolve(result.value)
+    					: adopt(result.value).then(fulfilled, rejected);
+    				}
+
+    				step((generator = generator.apply(thisArg, _arguments || [])).next());
+    			});
+    	};
+
+    	
     	const corsRedirect = "https://cors-anywhere.herokuapp.com";
     	const gamepediaUrl = "https://escapefromtarkov.gamepedia.com";
-    	console.log("Test");
+
+    	// The lifetime of cache data in seconds. 5000 seconds is about 83 minutes
+    	const cacheLifeTime = 60 * 60;
 
     	// ParseAmmo.Parse(corsRedirect+baseUrl+ammoUrl);
     	// This actuall works but it wants to complain
     	document.body.classList = [];
 
-    	ParseAmmo.GetBartersAndCrafts().then(data => {
+    	function getData() {
+    		return __awaiter(this, void 0, void 0, function* () {
+    			// We do this because the data from getCachedData can be large and kinda slow.
+    			// So this await lets the page actually load (background and stuff) and then it can load the saved data
+    			yield new Promise(resolve => setTimeout(resolve, 1000));
+
+    			// Then we try to get the cached data
+    			var data = getCachedData("trades", cacheLifeTime);
+
+    			// If our cached data is empty, fetch from the server
+    			if (data.length < 1) {
+    				var response = yield fetch("http://localhost:9775/get-data");
+    				var responseText = yield response.text();
+    				let trades = JSON.parse(responseText);
+    				setCachedData("trades", responseText);
+    				console.log("fetched server data");
+    				return trades;
+    			}
+
+    			console.log("Fetched saved local data");
+
+    			// Otherwise return our local data
+    			return data;
+    		});
+    	}
+
+    	// ParseAmmo.GetBartersAndCrafts().then(data => {$listings = data; $filteredListings = data})
+    	var response = getData().then(data => {
     		set_store_value(listings, $listings = data, $listings);
     		set_store_value(filteredListings, $filteredListings = data, $filteredListings);
     	});
@@ -2331,6 +2556,7 @@ var app = (function () {
     	});
 
     	$$self.$capture_state = () => ({
+    		__awaiter,
     		ModeSwitcher,
     		ParseAmmo,
     		Tailwindcss,
@@ -2344,11 +2570,25 @@ var app = (function () {
     		baseUrl,
     		ammoUrl,
     		barterUrl: barterUrl$1,
+    		cacheLifeTime,
+    		getData,
+    		getCachedData,
+    		setCachedData,
+    		response,
     		$listings,
     		$filteredListings
     	});
 
-    	return [gamepediaUrl, $listings, corsRedirect];
+    	$$self.$inject_state = $$props => {
+    		if ("__awaiter" in $$props) __awaiter = $$props.__awaiter;
+    		if ("response" in $$props) $$invalidate(1, response = $$props.response);
+    	};
+
+    	if ($$props && "$$inject" in $$props) {
+    		$$self.$inject_state($$props.$$inject);
+    	}
+
+    	return [gamepediaUrl, response, corsRedirect];
     }
 
     class App extends SvelteComponentDev {

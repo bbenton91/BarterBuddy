@@ -9,6 +9,7 @@ export type Item = {
 export type Trader = {
   name: string
   iconHref: string
+  relativeHref: string
 }
 
 export type Trade = {
@@ -50,7 +51,7 @@ export class ParseAmmo{
     
     let html = document.createElement('html');
     html.innerHTML = textContent;
-    let tables = html.querySelector("#mw-content-text").querySelectorAll("table");
+    let tables = html.querySelector("#mw-content-text")?.querySelectorAll("table") ?? [];
     var trades: Array<Trade> = [];
 
     // For each table we get the tbody inside.
@@ -89,16 +90,21 @@ export class ParseAmmo{
   }
 
   private static parseTrader(element: HTMLTableColElement): Trader{
-    var links = element.querySelectorAll("a");
-    var link = Array.from(links).filter(x => x.innerText !== "")[0]
-    let name = link.text;
-    var src = element?.querySelector("img")?.src ?? "";
-    var match = src.match(re)
+    var links = element.querySelectorAll("a"); // Get all images
+    var link = Array.from(links).filter(x => x.innerText !== "")[0] // Filter out the empty ones
+    let name = link.text; // Then we can get the actual name (like prapor ll1)
+    let relativeHref = link.href;
+    var src = element?.querySelector("img")?.src ?? ""; // Get the img source
+
+    // Then we pull the image name from the img url. For example: 
+    // from 'https://static.wikia.nocookie.net/escapefromtarkov_gamepedia/images/f/fc/Prapor_1_icon.png/revision/latest/scale-to-width-down/130?cb=20180822110125'
+    // we want just 'Prapor_1_icon.png'. This regex will do that for us
+    var match = src.match(re) 
     var imgName = ""
     if (match != null && match.length > 0)
       imgName = match[0]
     
-    return { name: name, iconHref: imgName };
+    return { name: name, iconHref: imgName, relativeHref: relativeHref };
   }
 
   private static parseInputItems(element: HTMLTableColElement):Array<Item> {
@@ -107,8 +113,8 @@ export class ParseAmmo{
 
     var amounts = children
       .filter(x => x.nodeType == Node.TEXT_NODE) // Only gets text
-      .filter(x => !ParseAmmo.isEmptyOrSpaces(x.textContent) && ParseAmmo.isValidInt(x.textContent.trim().slice(1))) // gets valid non-empty numbers. We do slice(1) because numbers are in the format of x1, x60, etc
-      .map(x => parseInt(x.textContent.trim().slice(1)));
+      .filter(x => !ParseAmmo.isEmptyOrSpaces(x.textContent ?? "") && ParseAmmo.isValidInt(x.textContent?.trim().slice(1) ?? "")) // gets valid non-empty numbers. We do slice(1) because numbers are in the format of x1, x60, etc
+      .map(x => parseInt(x.textContent?.trim().slice(1) ?? ""));
 
     var items:Array<Item> = []
     var amountIndex = 0;
@@ -116,7 +122,7 @@ export class ParseAmmo{
     var lastName = "";
 
     while (nameIndex >= 0 && nameIndex < names.length) {
-      var name = names[nameIndex].getAttribute("title").trim();
+      var name = names[nameIndex].getAttribute("title")?.trim() ?? "";
 
       if (name != lastName) {
         lastName = name
@@ -128,9 +134,11 @@ export class ParseAmmo{
           console.log(names[nameIndex]?.querySelector("img"));
           continue;
         }
-        var imgName = src.match(re)[0]
-        var amount = amountIndex < amounts.length ? amounts[amountIndex] : 1
-        var item: Item = { name: lastName, amount: amount, iconHref: imgName, relativeHref: names[nameIndex].getAttribute("href") }
+        var match = src.match(re)
+        var imgName = match != null && match.length > 0 ? match[0] : "";
+        var amount = amountIndex < amounts.length ? amounts[amountIndex] : 1;
+        var href = names[nameIndex].getAttribute("href") ?? "";
+        var item: Item = { name: lastName, amount: amount, iconHref: imgName, relativeHref: href }
         items.push(item);
         amountIndex++;
       }
