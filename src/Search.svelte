@@ -10,7 +10,6 @@
             console.log("filtering "+text)
             var re = new RegExp(text, 'gmi')
             $filteredListings = $listings.filter(x => x.inputs.some(y => y.name.match(re) || x.output.name.match(re))) 
-            console.log($filteredListings);
         }, 500);
     }
 

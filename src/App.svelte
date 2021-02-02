@@ -30,7 +30,7 @@
 	async function getData():Promise<Array<Trade>>{
 		// We do this because the data from getCachedData can be large and kinda slow.
 		// So this await lets the page actually load (background and stuff) and then it can load the saved data
-		await new Promise(resolve => setTimeout(resolve, 1000));
+		await new Promise(resolve => setTimeout(resolve, 300));
 
 		// Then we try to get the cached data
 		var data = getCachedData("trades", cacheLifeTime);

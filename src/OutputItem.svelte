@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Item } from "./ParseAmmo";
+    import Image from "svelte-image";
 
 
     export let output:Item;
@@ -9,6 +10,7 @@
 <div class="flex flex justify-center">
     <!-- The picture and name -->
     <div class="flex flex-col justify-items-center">
+        <!-- <Image src={"/images"+output.iconHref} /> -->
         <a class="self-center" href={gamepediaUrl+output.relativeHref}><img class="self-center" src={"/images"+output.iconHref} alt=""></a>
         {output.name}
     </div>
