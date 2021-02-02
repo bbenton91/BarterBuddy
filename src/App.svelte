@@ -33,19 +33,20 @@
 		await new Promise(resolve => setTimeout(resolve, 300));
 
 		// Then we try to get the cached data
-		var data = getCachedData("trades", cacheLifeTime);
+		var data = getCachedData("trades", 1);
 
 		// If our cached data is empty, fetch from the server
 		if(data.length < 1){
-			var response = await fetch("http://localhost:9775/get-data")
+			console.log("fetching server data");
+			var response = await fetch("http://76.110.59.93:9775/get-data")
 			var responseText = await response.text();
 			let trades:Array<Trade> = JSON.parse(responseText)
 			setCachedData('trades', responseText);
-			console.log("fetched server data");
+			
 			return trades
 		}
 
-		console.log("Fetched saved local data");
+		console.log("Fetching saved local data");
 		// Otherwise return our local data
 		return data;
 	}
