@@ -3696,7 +3696,7 @@ var app = (function () {
     			div = element("div");
     			div.textContent = "There was a problem. Try again later.";
     			attr_dev(div, "class", "flex justify-center items-center h-40 text-red-400");
-    			add_location(div, file$9, 103, 2, 4752);
+    			add_location(div, file$9, 103, 2, 4751);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -3785,7 +3785,7 @@ var app = (function () {
     			div = element("div");
     			create_component(jumper.$$.fragment);
     			attr_dev(div, "class", "flex justify-center items-center h-40");
-    			add_location(div, file$9, 97, 2, 4545);
+    			add_location(div, file$9, 97, 2, 4544);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -3869,13 +3869,13 @@ var app = (function () {
     			t6 = space();
     			info.block.c();
     			attr_dev(h1, "class", "uppercase text-6xl leading-normal font-thin text-svelte");
-    			add_location(h1, file$9, 89, 1, 3973);
+    			add_location(h1, file$9, 89, 1, 3972);
     			attr_dev(h2, "class", "text-2xl leading-normal font-thin text-svelte");
-    			add_location(h2, file$9, 90, 1, 4060);
-    			add_location(br0, file$9, 91, 1, 4153);
-    			add_location(br1, file$9, 91, 5, 4157);
+    			add_location(h2, file$9, 90, 1, 4059);
+    			add_location(br0, file$9, 91, 1, 4152);
+    			add_location(br1, file$9, 91, 5, 4156);
     			attr_dev(main, "class", "p-4 mx-auto w-5/6 text-center");
-    			add_location(main, file$9, 88, 0, 3927);
+    			add_location(main, file$9, 88, 0, 3926);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -4055,7 +4055,7 @@ var app = (function () {
     			// If our cached data is empty, fetch from the server
     			if (data.length < 1) {
     				console.log("fetching server data");
-    				var response = yield fetch("https://76.110.59.93:9775/get-data");
+    				var response = yield fetch("http://67.205.142.9:8050/get-data");
     				var responseText = yield response.text();
     				let trades = JSON.parse(responseText);
     				setCachedData("trades", responseText);
