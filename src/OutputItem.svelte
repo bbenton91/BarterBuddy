@@ -11,12 +11,15 @@
     <!-- The picture and name -->
     <div class="flex flex-col justify-items-center">
         <!-- <Image src={"/images"+output.iconHref} /> -->
-        <a class="self-center" href={gamepediaUrl+output.relativeHref}><img class="self-center" src={"/images"+output.iconHref} alt=""></a>
+        <div class="flex justify-center">
+            <a class="self-center max-w-4 lg:max-w-sm h-auto" href={gamepediaUrl+output.relativeHref}><img class="self-center" src={"/images"+output.iconHref} alt=""></a>
+            <span class="self-center pl-1">x{output.amount}</span>
+        </div>
         {output.name}
     </div>
 
     <!-- The amount (on the right) -->
-    <div class="self-center ml-3">
+    <!-- <div class="self-center">
         x{output.amount}
-    </div>
+    </div> -->
 </div>

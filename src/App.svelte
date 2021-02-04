@@ -1,6 +1,4 @@
 <script lang="ts">
-	import ModeSwitcher from './ModeSwitcher.svelte';
-	import { ParseAmmo } from './ParseAmmo';
 	import type { Trade } from './ParseAmmo';
 	import Tailwindcss from './Tailwindcss.svelte';
 	import Trades from './Trades.svelte';
@@ -8,13 +6,10 @@
 	import { listings, filteredListings } from './stores';
 	import { Jumper } from 'svelte-loading-spinners'
 
-	export const corsRedirect = "https://cors-anywhere.herokuapp.com";
 	export const gamepediaUrl = "https://escapefromtarkov.gamepedia.com";
-	const baseUrl = "/escapefromtarkov.gamepedia.com";
-	const ammoUrl = "/Ammunition";
 	const barterUrl = "/escapefromtarkov.gamepedia.com/Barter_trades"
 
-	// The lifetime of cache data in seconds. 5000 seconds is about 83 minutes
+	// The lifetime of cache data in seconds. 60*60 = 1 hour of cache
 	const cacheLifeTime = 60*60
 
 	type CachedData = {
@@ -33,12 +28,13 @@
 		await new Promise(resolve => setTimeout(resolve, 300));
 
 		// Then we try to get the cached data
-		var data = getCachedData("trades", 1);
+		var data = getCachedData("trades", cacheLifeTime);
 
 		// If our cached data is empty, fetch from the server
 		if(data.length < 1){
 			console.log("fetching server data");
-			var response = await fetch("http://67.205.142.9:443/get-data")
+			// var response = await fetch("https://eftbarters.link:443/get-data")
+			var response = await fetch("http://eftbarters.link:9775/get-data")
 			var responseText = await response.text();
 			let trades:Array<Trade> = JSON.parse(responseText)
 			setCachedData('trades', responseText);
@@ -99,9 +95,9 @@
 <Tailwindcss />
 <!-- <ModeSwitcher /> -->
 
-<main class="p-4 mx-auto w-5/6 text-center">
-	<h1 class="uppercase text-6xl leading-normal font-thin text-svelte">Barter Buddy</h1>
-	<h2 class="text-2xl leading-normal font-thin text-svelte">A Barter Searcher for Tarkov</h2>
+<main class="p-4 mx-auto w-full lg:w-5/6 text-center">
+	<h1 class="uppercase text-4xl lg:text-6xl leading-normal font-thin text-svelte">EFT Barters</h1>
+	<h2 class="text-base lg:text-2xl leading-normal font-thin text-svelte mt-2">A barter and hideout craft searcher for Escape from Tarkov</h2>
 	<br><br>
 	<!-- <button class="w-40 h-14 bg-gray-700 rounded text-svelte" on:click|once={() => ParseAmmo.Parse(barterUrl).then(data => {$listings = data; $filteredListings = data})}>Load Data</button> -->
 	<!-- <button class="w-40 h-14 bg-gray-700 rounded text-svelte" on:click|once={() => ParseAmmo.Parse2(corsRedirect + barterUrl)}>Load Data2</button> -->
