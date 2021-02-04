@@ -97,7 +97,7 @@
 
 <main class="p-4 mx-auto w-full lg:w-5/6 text-center">
 	<h1 class="uppercase text-4xl lg:text-6xl leading-normal font-thin text-svelte">EFT Barters</h1>
-	<h2 class="text-base lg:text-2xl leading-normal font-thin text-svelte mt-2">A barter and hideout craft searcher for Escape from Tarkov</h2>
+	<h2 class="text-base lg:text-2xl leading-normal font-thin text-svelte mt-2 italic">An easy way to search for barters and hideout crafts in Escape from Tarkov</h2>
 	<br><br>
 	<!-- <button class="w-40 h-14 bg-gray-700 rounded text-svelte" on:click|once={() => ParseAmmo.Parse(barterUrl).then(data => {$listings = data; $filteredListings = data})}>Load Data</button> -->
 	<!-- <button class="w-40 h-14 bg-gray-700 rounded text-svelte" on:click|once={() => ParseAmmo.Parse2(corsRedirect + barterUrl)}>Load Data2</button> -->

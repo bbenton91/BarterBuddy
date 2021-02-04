@@ -13,11 +13,17 @@
 	}
 </style>
 
-<main class="p-4 mx-auto text-center w-full lg:w-4/6">
+<main class="p-4 mx-auto text-center w-full lg:w-4/6 text-svelte">
     <table>
         <tbody>
+            <tr>
+                <th>Inputs</th>
+                <th>Trader/Hideout</th>
+                <th>Output</th>
+            </tr>
+
             {#each $filteredListings as listing}
-                <tr class="border-2 text-svelte text-xs lg:text-base">
+                <tr class="border-2 text-xs lg:text-base">
 
                     <!-- This is the input items -->
                     <td class="border-2 border-color p-1 lg:p-4 w-1/12 lg:w-1/6">
@@ -36,6 +42,15 @@
                     </td> 
                 </tr>
             {/each}
+
+            
         </tbody>
     </table>
+
+    <!-- If there are no filtered listings, we want to let them know -->
+    {#if $filteredListings.length == 0}
+        <div class="flex justify-center">
+            No results found. Try another search
+        </div>
+    {/if}
 </main>

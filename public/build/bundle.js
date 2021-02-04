@@ -998,7 +998,7 @@ var app = (function () {
     	return child_ctx;
     }
 
-    // (15:12) {#each $filteredListings as listing}
+    // (21:12) {#each $filteredListings as listing}
     function create_each_block$1(ctx) {
     	let tr;
     	let td0;
@@ -1049,13 +1049,13 @@ var app = (function () {
     			create_component(inputitem1.$$.fragment);
     			t2 = space();
     			attr_dev(td0, "class", "border-2 border-color p-1 lg:p-4 w-1/12 lg:w-1/6 svelte-b2iufc");
-    			add_location(td0, file$2, 18, 20, 587);
+    			add_location(td0, file$2, 24, 20, 733);
     			attr_dev(td1, "class", "border-2 border-color p-1 lg:p-4 w-1/12 lg:w-1/6 svelte-b2iufc");
-    			add_location(td1, file$2, 23, 20, 838);
+    			add_location(td1, file$2, 29, 20, 984);
     			attr_dev(td2, "class", "border-2 border-color p-1 lg:p-4 w-1/12 lg:w-1/6 svelte-b2iufc");
-    			add_location(td2, file$2, 28, 20, 1093);
-    			attr_dev(tr, "class", "border-2 text-svelte text-xs lg:text-base");
-    			add_location(tr, file$2, 15, 16, 455);
+    			add_location(td2, file$2, 34, 20, 1239);
+    			attr_dev(tr, "class", "border-2 text-xs lg:text-base");
+    			add_location(tr, file$2, 21, 16, 613);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, tr, anchor);
@@ -1109,7 +1109,37 @@ var app = (function () {
     		block,
     		id: create_each_block$1.name,
     		type: "each",
-    		source: "(15:12) {#each $filteredListings as listing}",
+    		source: "(21:12) {#each $filteredListings as listing}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (47:4) {#if $filteredListings.length == 0}
+    function create_if_block(ctx) {
+    	let div;
+
+    	const block = {
+    		c: function create() {
+    			div = element("div");
+    			div.textContent = "No results found. Try another search";
+    			attr_dev(div, "class", "flex justify-center");
+    			add_location(div, file$2, 47, 8, 1750);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, div, anchor);
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(div);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block.name,
+    		type: "if",
+    		source: "(47:4) {#if $filteredListings.length == 0}",
     		ctx
     	});
 
@@ -1120,6 +1150,14 @@ var app = (function () {
     	let main;
     	let table;
     	let tbody;
+    	let tr;
+    	let th0;
+    	let t1;
+    	let th1;
+    	let t3;
+    	let th2;
+    	let t5;
+    	let t6;
     	let current;
     	let each_value = /*$filteredListings*/ ctx[1];
     	validate_each_argument(each_value);
@@ -1133,19 +1171,37 @@ var app = (function () {
     		each_blocks[i] = null;
     	});
 
+    	let if_block = /*$filteredListings*/ ctx[1].length == 0 && create_if_block(ctx);
+
     	const block = {
     		c: function create() {
     			main = element("main");
     			table = element("table");
     			tbody = element("tbody");
+    			tr = element("tr");
+    			th0 = element("th");
+    			th0.textContent = "Inputs";
+    			t1 = space();
+    			th1 = element("th");
+    			th1.textContent = "Trader/Hideout";
+    			t3 = space();
+    			th2 = element("th");
+    			th2.textContent = "Output";
+    			t5 = space();
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].c();
     			}
 
-    			add_location(tbody, file$2, 13, 8, 380);
-    			add_location(table, file$2, 12, 4, 363);
-    			attr_dev(main, "class", "p-4 mx-auto text-center w-full lg:w-4/6");
+    			t6 = space();
+    			if (if_block) if_block.c();
+    			add_location(th0, file$2, 15, 16, 435);
+    			add_location(th1, file$2, 16, 16, 468);
+    			add_location(th2, file$2, 17, 16, 509);
+    			add_location(tr, file$2, 14, 12, 413);
+    			add_location(tbody, file$2, 13, 8, 392);
+    			add_location(table, file$2, 12, 4, 375);
+    			attr_dev(main, "class", "p-4 mx-auto text-center w-full lg:w-4/6 text-svelte");
     			add_location(main, file$2, 11, 0, 303);
     		},
     		l: function claim(nodes) {
@@ -1155,11 +1211,20 @@ var app = (function () {
     			insert_dev(target, main, anchor);
     			append_dev(main, table);
     			append_dev(table, tbody);
+    			append_dev(tbody, tr);
+    			append_dev(tr, th0);
+    			append_dev(tr, t1);
+    			append_dev(tr, th1);
+    			append_dev(tr, t3);
+    			append_dev(tr, th2);
+    			append_dev(tbody, t5);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].m(tbody, null);
     			}
 
+    			append_dev(main, t6);
+    			if (if_block) if_block.m(main, null);
     			current = true;
     		},
     		p: function update(ctx, [dirty]) {
@@ -1190,6 +1255,17 @@ var app = (function () {
 
     				check_outros();
     			}
+
+    			if (/*$filteredListings*/ ctx[1].length == 0) {
+    				if (if_block) ; else {
+    					if_block = create_if_block(ctx);
+    					if_block.c();
+    					if_block.m(main, null);
+    				}
+    			} else if (if_block) {
+    				if_block.d(1);
+    				if_block = null;
+    			}
     		},
     		i: function intro(local) {
     			if (current) return;
@@ -1212,6 +1288,7 @@ var app = (function () {
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(main);
     			destroy_each(each_blocks, detaching);
+    			if (if_block) if_block.d();
     		}
     	};
 
@@ -1673,7 +1750,7 @@ var app = (function () {
     			div = element("div");
     			div.textContent = "There was a problem. Try again later.";
     			attr_dev(div, "class", "flex justify-center items-center h-40 text-red-400");
-    			add_location(div, file$5, 99, 2, 4664);
+    			add_location(div, file$5, 99, 2, 4687);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -1762,7 +1839,7 @@ var app = (function () {
     			div = element("div");
     			create_component(jumper.$$.fragment);
     			attr_dev(div, "class", "flex justify-center items-center h-40");
-    			add_location(div, file$5, 93, 2, 4457);
+    			add_location(div, file$5, 93, 2, 4480);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -1837,7 +1914,7 @@ var app = (function () {
     			h1.textContent = "EFT Barters";
     			t2 = space();
     			h2 = element("h2");
-    			h2.textContent = "A barter and hideout craft searcher for Escape from Tarkov";
+    			h2.textContent = "An easy way to search for barters and hideout crafts in Escape from Tarkov";
     			t4 = space();
     			br0 = element("br");
     			br1 = element("br");
@@ -1847,10 +1924,10 @@ var app = (function () {
     			info.block.c();
     			attr_dev(h1, "class", "uppercase text-4xl lg:text-6xl leading-normal font-thin text-svelte");
     			add_location(h1, file$5, 85, 1, 3826);
-    			attr_dev(h2, "class", "text-base lg:text-2xl leading-normal font-thin text-svelte mt-2");
+    			attr_dev(h2, "class", "text-base lg:text-2xl leading-normal font-thin text-svelte mt-2 italic");
     			add_location(h2, file$5, 86, 1, 3924);
-    			add_location(br0, file$5, 87, 1, 4065);
-    			add_location(br1, file$5, 87, 5, 4069);
+    			add_location(br0, file$5, 87, 1, 4088);
+    			add_location(br1, file$5, 87, 5, 4092);
     			attr_dev(main, "class", "p-4 mx-auto w-full lg:w-5/6 text-center");
     			add_location(main, file$5, 84, 0, 3770);
     		},
