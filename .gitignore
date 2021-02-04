@@ -37,3 +37,5 @@ _output
 /site/src/routes/_components/WhosUsingSvelte.*
 
 *.tar
+build.sh
+/.well-known/

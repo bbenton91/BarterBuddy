@@ -8,7 +8,9 @@
 
 <div class="flex flex-col justify-items-center items-center">
     <a href={gamepediaUrl+trader.relativeHref}>
-        <img class="self-center" src={"/images"+trader.iconHref} alt={trader.name}>
+        {#if trader.iconHref != ""}
+            <img class="self-center" src={"/images"+trader.iconHref} alt={trader.name}>
+        {/if}
     </a>
     
     {trader.name}
