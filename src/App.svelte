@@ -34,7 +34,7 @@
 		if(data.length < 1){
 			console.log("fetching server data");
 			// var response = await fetch("https://eftbarters.link:443/get-data")
-			var response = await fetch("http://eftbarters.link:9775/get-data")
+			var response = await fetch("https://eftbarters.link/api/get-data")
 			var responseText = await response.text();
 			let trades:Array<Trade> = JSON.parse(responseText)
 			setCachedData('trades', responseText);

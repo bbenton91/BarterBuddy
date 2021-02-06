@@ -37,5 +37,9 @@ _output
 /site/src/routes/_components/WhosUsingSvelte.*
 
 *.tar
+*.sh
+*.key
+*.crt
 build.sh
+/public/images
 /.well-known/

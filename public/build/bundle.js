@@ -1519,7 +1519,7 @@ var app = (function () {
     				console.log("fetching server data");
 
     				// var response = await fetch("https://eftbarters.link:443/get-data")
-    				var response = yield fetch("http://eftbarters.link:9775/get-data");
+    				var response = yield fetch("https://eftbarters.link/api/get-data");
 
     				var responseText = yield response.text();
     				let trades = JSON.parse(responseText);
