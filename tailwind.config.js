@@ -1,5 +1,13 @@
 module.exports = {
   darkMode: 'class', // This can be 'media' if preferred.
+  // purge: {
+  //   enabled: true,
+  //   content: [
+  //     './src/**/*.svelte',
+  //   './src/**/*.html',
+  //   './public/**/*.html',
+  //   ]
+  // },
   purge: [
     './src/**/*.svelte',
     './src/**/*.html',
@@ -7,18 +15,20 @@ module.exports = {
   ],
   theme: {
     extend: {
+
       colors: {
         svelte: '#ff3e00',
       },
+
+      maxWidth: {
+        '1': '1rem',
+        '2': '2rem',
+        '3': '3rem',
+        '4': '4rem',
+        '5': '5rem',
+        '6': '6rem',
+       }
     },
-    maxWidth: {
-      '1': '1rem',
-      '2': '2rem',
-      '3': '3rem',
-      '4': '4rem',
-      '5': '5rem',
-      '6': '6rem',
-     }
   },
   variants: {},
   plugins: [],

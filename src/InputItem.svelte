@@ -13,7 +13,7 @@
         <div class="flex flex-col justify-items-center">
             <!-- <Image src={"/images"+output.iconHref} /> -->
             <div class="flex justify-center">
-                <a class="self-center max-w-4 lg:max-w-sm h-auto" href={gamepediaUrl+inputItem.relativeHref}><img class="self-center" src={"/images"+inputItem.iconHref} alt=""></a>
+                <a class="self-center max-w-3 lg:max-w-lg h-auto" href={gamepediaUrl+inputItem.relativeHref}><img class="self-center" src={"/images"+inputItem.iconHref} alt=""></a>
                 <span class="self-center pl-1">x{inputItem.amount}</span>
             </div>
             {inputItem.name}

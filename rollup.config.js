@@ -39,16 +39,23 @@ export default {
 		name: 'app',
 		file: 'public/build/bundle.js'
 	},
+	
 	plugins: [
 		svelte({
 			// enable run-time checks when not in production
 			compilerOptions: {
 				dev: !production,
 			},
-			preprocess: sveltePreprocess({
-				postcss: true,
-				...image(),
-			}),
+			preprocess: [
+				image(),
+				sveltePreprocess({
+					postcss: true,
+				}),
+			],
+			// preprocess: sveltePreprocess({
+			// 	postcss: true,
+			// 	...image(),
+			// }),
 		}),
 		// we'll extract any component CSS out into
 		// a separate file - better for performance
@@ -76,7 +83,7 @@ export default {
 		// If we're building for production (npm run build
 		// instead of npm run dev), minify
 		// ! I've disabled minify by using !terser()
-		production && !terser()
+		production && terser()
 	],
 	watch: {
 		clearScreen: false

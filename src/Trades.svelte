@@ -31,7 +31,7 @@
                     </td>
 
                     <!-- This is the trader -->
-                    <td class="border-2 border-color p-1 lg:p-4 w-1/12 lg:w-1/6">
+                    <td class="border-2 border-color p-1 lg:p-4 lg:w-1/6">
                         <Trader trader={listing.trader} gamepediaUrl={gamepediaUrl} />
                     </td> 
 
