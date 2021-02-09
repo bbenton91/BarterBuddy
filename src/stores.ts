@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { Trade } from './ParseAmmo';
+import type { Trade } from './Types';
 
 export const listings = writable<Array<Trade>>( [] );
 export const filteredListings = writable<Array<Trade>>([]);

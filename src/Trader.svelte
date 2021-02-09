@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Trader } from "./ParseAmmo";
+    import type { Trader } from "./Types";
     // import Image from "svelte-image";
 
 
