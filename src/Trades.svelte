@@ -6,7 +6,7 @@
     
     export let gamepediaUrl:string;
 
-    const handleWheel = (e:WheelEvent) => {
+    const handleWheel = (e:UIEvent) => {
         if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - 500) {
             $showingAmount = clamp($showingAmount + 25, 0, $filteredListings.length)
         }
@@ -18,7 +18,7 @@
     }
 </script>
 
-<svelte:window on:wheel={handleWheel} />
+<svelte:window on:scroll={handleWheel} />
 
 <style>
 	.border-color{

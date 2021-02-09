@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type { Trade } from './ParseAmmo';
 	import Tailwindcss from './Tailwindcss.svelte';
 	import Trades from './Trades.svelte';
 	import Search from './Search.svelte';
 	import { listings, filteredListings } from './stores';
 	import { Jumper } from 'svelte-loading-spinners'
+	import type { Trade } from './Types';
 
 	export const gamepediaUrl = "https://escapefromtarkov.gamepedia.com";
 	const barterUrl = "/escapefromtarkov.gamepedia.com/Barter_trades"
@@ -19,8 +19,11 @@
 
 	// ParseAmmo.Parse(corsRedirect+baseUrl+ammoUrl);
 
-	// This actuall works but it wants to complain
+	// This actually works but it wants to complain
+	// Clears all existing classes from the body
 	document.body.classList = [];
+	// Adds a minimum full height class to the body
+	document.body.classList.add("min-h-full");
 
 	async function getData():Promise<Array<Trade>>{
 		// We do this because the data from getCachedData can be large and kinda slow.
@@ -89,13 +92,12 @@
 	:global(body) {
 		background-color: rgb(19, 19, 19);
 	}
-
 </style>
 
 <Tailwindcss />
 <!-- <ModeSwitcher /> -->
 
-<main class="p-4 mx-auto w-full lg:w-5/6 text-center">
+<main class="p-4 mx-auto w-full lg:w-5/6 text-center min-h-full">
 	<h1 class="uppercase text-4xl lg:text-6xl leading-normal font-thin text-svelte">EFT Barters</h1>
 	<h2 class="text-base lg:text-2xl leading-normal font-thin text-svelte mt-2 italic">An easy way to search for barters and hideout crafts in Escape from Tarkov</h2>
 	<br><br>

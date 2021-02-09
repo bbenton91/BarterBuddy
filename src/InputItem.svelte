@@ -1,5 +1,7 @@
 <script lang="ts">
-    import type {Item} from './ParseAmmo'
+import type { Item } from "./Types";
+
+
     // import Image from 'svelte-image'
 
     export let inputs:Item[]
