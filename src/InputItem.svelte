@@ -6,6 +6,13 @@ import type { Item } from "./Types";
 
     export let inputs:Item[]
     export let gamepediaUrl:string
+
+    function setSearch(text:string){
+        console.log(text);
+        let input = document.querySelector("#itemSearchInput") as HTMLInputElement;
+        input.value = text;
+        input.dispatchEvent(new Event("input"));
+    }
 </script>
 
 <!-- This is the input items -->
@@ -15,10 +22,10 @@ import type { Item } from "./Types";
         <div class="flex flex-col justify-items-center">
             <!-- <Image src={"/images"+output.iconHref} /> -->
             <div class="flex justify-center">
-                <a class="self-center max-w-3 lg:max-w-lg h-auto" href={gamepediaUrl+inputItem.relativeHref}><img class="self-center" src={"/images"+inputItem.iconHref} alt=""></a>
+                <a class="cursor-pointer self-center max-w-3 lg:max-w-lg h-auto" on:click={() => setSearch(inputItem.name)}><img class="self-center" src={"/images"+inputItem.iconHref} alt=""></a>
                 <span class="self-center pl-1">x{inputItem.amount}</span>
             </div>
-            {inputItem.name}
+            <a class="cursor-pointer" on:click={()=> window.open(gamepediaUrl+inputItem.relativeHref, '_blank')}>{inputItem.name}</a>
         </div>
 
         <!-- The amount (on the right) -->
