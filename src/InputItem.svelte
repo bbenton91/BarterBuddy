@@ -8,7 +8,6 @@ import type { Item } from "./Types";
     export let gamepediaUrl:string
 
     function setSearch(text:string){
-        console.log(text);
         let input = document.querySelector("#itemSearchInput") as HTMLInputElement;
         input.value = text;
         input.dispatchEvent(new Event("input"));
