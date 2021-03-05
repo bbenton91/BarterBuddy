@@ -21,9 +21,11 @@ import type { Item } from "./Types";
         <div class="flex flex-col justify-items-center">
             <!-- <Image src={"/images"+output.iconHref} /> -->
             <div class="flex justify-center">
+                <!-- svelte-ignore a11y-missing-attribute -->
                 <a class="cursor-pointer self-center max-w-3 lg:max-w-lg h-auto" on:click={() => setSearch(inputItem.name)}><img class="self-center" src={"/images"+inputItem.iconHref} alt=""></a>
                 <span class="self-center pl-1">x{inputItem.amount}</span>
             </div>
+            <!-- svelte-ignore a11y-missing-attribute -->
             <a class="cursor-pointer" on:click={()=> window.open(gamepediaUrl+inputItem.relativeHref, '_blank')}>{inputItem.name}</a>
         </div>
 
