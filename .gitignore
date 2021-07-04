@@ -43,3 +43,4 @@ _output
 build.sh
 /public/images
 /.well-known/
+/images
