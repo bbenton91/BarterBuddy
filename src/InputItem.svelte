@@ -26,12 +26,7 @@ import type { Item } from "./Types";
                 <span class="self-center pl-1">x{inputItem.amount}</span>
             </div>
             <!-- svelte-ignore a11y-missing-attribute -->
-            <a class="cursor-pointer" on:click={()=> window.open(gamepediaUrl+inputItem.relativeHref, '_blank')}>{inputItem.name}</a>
+            <a class="cursor-pointer" on:click={()=> window.open(gamepediaUrl+inputItem.relativeHref, '_blank')}>{inputItem.title}</a>
         </div>
-
-        <!-- The amount (on the right) -->
-        <!-- <div class="self-center">
-            x{inputItem.amount}
-        </div> -->
     </div>
 {/each}
