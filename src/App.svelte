@@ -2,9 +2,11 @@
 	import Tailwindcss from './Tailwindcss.svelte';
 	import Trades from './Trades.svelte';
 	import Search from './Search.svelte';
-	import { listings, filteredListings } from './stores';
+	import { listings, filteredListings, itemInfo } from './stores';
 	import { Jumper } from 'svelte-loading-spinners'
-	import type { Trade } from './Types';
+	import type { Trade, ItemInfo} from './Types';
+	import type {emptyItem, emptyTrade, emptyItemInfo} from './Types';
+
 
 	export const gamepediaUrl = "https://escapefromtarkov.gamepedia.com";
 	const barterUrl = "/escapefromtarkov.gamepedia.com/Barter_trades"
@@ -17,6 +19,11 @@
 		cacheTime: number
 	}
 
+	type ResponseData = {
+		trades: Array<Trade>,
+		extendedInfo: Array<ItemInfo>
+	}
+
 	// ParseAmmo.Parse(corsRedirect+baseUrl+ammoUrl);
 
 	// This actually works but it wants to complain
@@ -25,24 +32,27 @@
 	// Adds a minimum full height class to the body
 	document.body.classList.add("min-h-full");
 
-	async function getData():Promise<Array<Trade>>{
+	async function getData():Promise<ResponseData>{
 		// We do this because the data from getCachedData can be large and kinda slow.
 		// So this await lets the page actually load (background and stuff) and then it can load the saved data
 		await new Promise(resolve => setTimeout(resolve, 300));
 
 		// Then we try to get the cached data
-		var data = getCachedData("trades", cacheLifeTime);
+		var trades:Array<Trade> = getCachedData<Array<Trade>>("trades", cacheLifeTime, []);
+		var info = getCachedData<Array<ItemInfo>>("trades", cacheLifeTime, []);
+		let data:ResponseData = {trades: trades, extendedInfo: info};
 
 		// If our cached data is empty, fetch from the server
-		if(data.length < 1){
+		if(data.trades.length < 1){
 			console.log("fetching server data");
-			// var response = await fetch("https://eftbarters.link:443/get-data")
-			var response = await fetch("https://eftbarters.link/api/get-data")
+			// var response = await fetch("https://eftbarters.link/api/get-data")
+			var response = await fetch("http://localhost:443/api/get-data")
 			var responseText = await response.text();
-			let trades:Array<Trade> = JSON.parse(responseText)
-			setCachedData('trades', responseText);
+			let responseData:ResponseData = JSON.parse(responseText)
+			setCachedData('trades', JSON.stringify(responseData.trades));
+			setCachedData('extendedInfo', JSON.stringify(responseData.extendedInfo));
 			
-			return trades
+			return responseData
 		}
 
 		console.log("Fetching saved local data");
@@ -55,24 +65,24 @@
 	 * @param name The name of the object to retrieve
 	 * @param cachelife The life of the cache. If the current time minus the stored data's life is less than this, we return empty
 	 */
-	function getCachedData(name:string, cachelife:number):Array<Trade>{
+	function getCachedData<T>(name:string, cachelife:number, defaultValue:T):T{
 		var cachelife = cachelife*1000; 
 
 		var cachedString = localStorage.getItem(name) ?? "";
 
 		if(cachedString !== ""){
 			var cachedData:CachedData = JSON.parse(cachedString);
-			var trades = JSON.parse(cachedData.data);
+			var data:T = JSON.parse(cachedData.data);
 			var expired = (Date.now()) > cachedData.cacheTime + cachelife;
 			if(expired){
 				localStorage.removeItem(name);
-				return [];
+				return defaultValue;
 			}
 			
-			return trades;
+			return data;
 		}
 
-		return [];
+		return defaultValue;
 	}
 
 	function setCachedData(name:string, data:string){
@@ -83,8 +93,15 @@
 
 	// ParseAmmo.GetBartersAndCrafts().then(data => {$listings = data; $filteredListings = data})
 	var response = getData().then(data => {
-		$listings = data
-		$filteredListings = data
+		$listings = data.trades
+		$filteredListings = data.trades
+		
+		let map = new Map<string, ItemInfo>();
+		data.extendedInfo.forEach(info => {
+			map.set(info.name, info);
+		});
+
+		$itemInfo = map;
 	});
 </script>
 
