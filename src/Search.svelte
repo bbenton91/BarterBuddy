@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { filteredListings, listings, showingAmount } from './stores'; 
+    import { filteredListings, itemInfo, listings, showingAmount } from './stores'; 
 
     var timeoutFunc:number;
     var searchText = "";
@@ -7,8 +7,10 @@
     function filter(text:string){
         clearTimeout(timeoutFunc);
         timeoutFunc = setTimeout(() => {
-            var re = new RegExp(text, 'gmi')
-            $filteredListings = $listings.filter(x => x.inputs.some(y => y.name.match(re) || x.output.name.match(re) || x.trader.name.match(re))) 
+            var re = new RegExp(text, 'gmi');
+            // console.log(text);
+            // console.log($listings);
+            $filteredListings = $listings.filter(x => x.inputs.some(y => y.name.match(re) || $itemInfo.get(y.name)?.abbreviation.match(re)) || x.output.name.match(re) || x.trader.name.match(re) || $itemInfo.get(x.output.name)?.abbreviation.match(re));
             $showingAmount = text !== "" ? $filteredListings.length : 25;
         }, 500);
     }
