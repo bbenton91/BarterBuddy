@@ -1,7 +1,10 @@
 <script lang="ts">
-    import { filteredListings, listings, showingAmount } from './stores';
+    import { currentItem, currentItemInfo, filteredListings, listings, showingAmount } from './stores';
     import InputItem from './InputItem.svelte'
     import Trader from './Trader.svelte';
+    import Tooltip from './Tooltip.svelte';
+    import { emptyItem, emptyItemInfo } from './Types';
+    import { empty } from 'svelte/internal';
     // import Image from "svelte-image";
     
     export let gamepediaUrl:string;
@@ -16,6 +19,12 @@
     function clamp(num:number, min:number, max:number):number{
         return Math.min(Math.max(num, min), max);
     }
+
+    function startMouseMove(event:MouseEvent){
+       $currentItem = emptyItem();
+       $currentItemInfo = emptyItemInfo();
+       document.querySelector("#tooltip")?.classList.add("hidden");
+    }
 </script>
 
 <svelte:window on:scroll={handleWheel} />
@@ -24,16 +33,22 @@
 	.border-color{
 		border-color: rgb(44, 44, 44);
 	}
+
+    .tall{
+        min-height: 1000px;
+    }
 </style>
 
-<main class="p-4 mx-auto text-center w-full lg:w-4/6 text-svelte">
+<main class="p-4 mx-auto text-center w-full lg:w-4/6 text-svelte tall" on:mouseenter={startMouseMove}>
+    <Tooltip />
+
     <!-- If there are no filtered listings, we want to let them know -->
     {#if $filteredListings.length == 0}
         <div class="flex justify-center">
             No results found. Try another search
         </div>
     {:else}
-        <table>
+        <table id="mainTable">
             <tbody>
                 <tr>
                     <th>Inputs</th>

@@ -1,5 +1,8 @@
 <script lang="ts">
-import type { Item } from "./Types";
+    import type { Item } from "./Types";
+    import { listings, itemInfo, currentItemInfo, currentItem } from './stores';
+    import {emptyItemInfo} from "./Types";
+
 
 
     // import Image from 'svelte-image'
@@ -7,10 +10,36 @@ import type { Item } from "./Types";
     export let inputs:Item[]
     export let gamepediaUrl:string
 
+    let m = {x:0, y:0};
+    let elem:HTMLElement;
+
     function setSearch(text:string){
         let input = document.querySelector("#itemSearchInput") as HTMLInputElement;
         input.value = text;
         input.dispatchEvent(new Event("input"));
+    }
+
+    function startMouseMove(event:MouseEvent, name:string, item:Item){
+        let id = "#inputItem-"+name;
+        // let element = document.querySelector(id);
+        let itemName = name.split("_").join(" ");
+        let storedItemInfo = $itemInfo.get(itemName) ?? emptyItemInfo();
+        $currentItemInfo = storedItemInfo;
+        $currentItem = item;
+        
+        // console.log($itemInfo)
+    }
+
+    function handleMouseLeave(event:MouseEvent){
+        elem?.classList.add("hidden");
+    }
+
+    function handleMouseMove(event:MouseEvent){
+        let tooltip = document.querySelector("#tooltip") as HTMLElement;
+        tooltip?.classList.remove("hidden");
+        tooltip.style.left = event.clientX + 20 + "px";
+        tooltip.style.top = event.clientY - tooltip.offsetHeight/2 + window.pageYOffset + "px";
+        elem = tooltip;
     }
 </script>
 
@@ -18,7 +47,7 @@ import type { Item } from "./Types";
 {#each inputs as inputItem}
     <div class="flex justify-center mb-2 mt-2">
         <!-- The picture and name -->
-        <div class="flex flex-col justify-items-center">
+        <div id={"inputItem-"+inputItem.name.split(" ").join("_")} class="flex flex-col justify-items-center" on:mousemove={handleMouseMove} on:mouseleave={handleMouseLeave} on:mouseover={(evt) => startMouseMove(evt, inputItem.name.split(" ").join("_"), inputItem)}>
             <!-- <Image src={"/images"+output.iconHref} /> -->
             <div class="flex justify-center">
                 <!-- svelte-ignore a11y-missing-attribute -->
