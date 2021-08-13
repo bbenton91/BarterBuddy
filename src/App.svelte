@@ -39,7 +39,7 @@
 
 		// Then we try to get the cached data
 		var trades:Array<Trade> = getCachedData<Array<Trade>>("trades", cacheLifeTime, []);
-		var info = getCachedData<Array<ItemInfo>>("trades", cacheLifeTime, []);
+		var info = getCachedData<Array<ItemInfo>>("extendedInfo", cacheLifeTime, []);
 		let data:ResponseData = {trades: trades, extendedInfo: info};
 
 		// If our cached data is empty, fetch from the server
@@ -97,10 +97,13 @@
 		$filteredListings = data.trades
 		
 		let map = new Map<string, ItemInfo>();
-		data.extendedInfo.forEach(info => {
+		for (let info of data.extendedInfo){
+			// console.log(info.name);
 			map.set(info.name, info);
-		});
+		}
 
+		// console.log(data.extendedInfo);
+		// console.log(map);
 		$itemInfo = map;
 	});
 </script>
