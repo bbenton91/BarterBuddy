@@ -9,9 +9,6 @@ import type { ItemInfo } from "./Types";
 
 
 <style>
-	.border-color{
-		border-color: rgb(44, 44, 44);
-	}
 
 	#tooltip{
 		position: absolute;
@@ -36,6 +33,4 @@ import type { ItemInfo } from "./Types";
 			<p class="ml-2">{location}</p>
 		{/each}
 	{/if}
-
-	<h2 class="text-lg"></h2>
 </main>

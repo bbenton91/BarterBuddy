@@ -1,11 +1,15 @@
 <script lang="ts">
+	// import * as dotenv from 'dotenv';
+	import { Jumper } from 'svelte-loading-spinners';
+	import Search from './Search.svelte';
+	import { filteredListings, itemInfo, listings } from './stores';
 	import Tailwindcss from './Tailwindcss.svelte';
 	import Trades from './Trades.svelte';
-	import Search from './Search.svelte';
-	import { listings, filteredListings, itemInfo } from './stores';
-	import { Jumper } from 'svelte-loading-spinners'
-	import type { Trade, ItemInfo} from './Types';
-	import type {emptyItem, emptyTrade, emptyItemInfo} from './Types';
+	import type { ItemInfo, Trade } from './Types';
+	import * as Env from "../Env"
+ // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+
+	// dotenv.config()
 
 
 	export const gamepediaUrl = "https://escapefromtarkov.gamepedia.com";
@@ -33,6 +37,7 @@
 	document.body.classList.add("min-h-full");
 
 	async function getData():Promise<ResponseData>{
+		// console.log(dotenv.config())
 		// We do this because the data from getCachedData can be large and kinda slow.
 		// So this await lets the page actually load (background and stuff) and then it can load the saved data
 		await new Promise(resolve => setTimeout(resolve, 300));
@@ -45,8 +50,7 @@
 		// If our cached data is empty, fetch from the server
 		if(data.trades.length < 1){
 			console.log("fetching server data");
-			// var response = await fetch("https://eftbarters.link/api/get-data")
-			var response = await fetch("http://localhost:443/api/get-data")
+			var response = await fetch(Env.API)
 			var responseText = await response.text();
 			let responseData:ResponseData = JSON.parse(responseText)
 			setCachedData('trades', JSON.stringify(responseData.trades));
@@ -136,5 +140,16 @@
 			There was a problem. Try again later.
 		</div>
 	{/await}
+
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7853339352311833"
+     crossorigin="anonymous"></script>
+	<ins class="adsbygoogle"
+		style="display:block"
+		data-ad-format="autorelaxed"
+		data-ad-client="ca-pub-7853339352311833"
+		data-ad-slot="6725943847"></ins>
+	<script>
+		(adsbygoogle = window.adsbygoogle || []).push({});
+	</script>
 
 </main>

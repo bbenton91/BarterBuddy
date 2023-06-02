@@ -57,27 +57,39 @@
                 </tr>
 
                 {#each {length: $showingAmount} as listing, i}
-                    <tr class="border-2 text-xs lg:text-base">
+                    {#if i%10 == 0}
+                        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7853339352311833"
+                            crossorigin="anonymous"></script>
+                        <ins class="adsbygoogle"
+                            style="display:block"
+                            data-ad-format="fluid"
+                            data-ad-layout-key="-g1+5+1+2-3"
+                            data-ad-client="ca-pub-7853339352311833"
+                            data-ad-slot="6570031173"></ins>
+                        <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    {:else}
+                        <tr class="border-2 text-xs lg:text-base">
 
-                        <!-- This is the input items -->
-                        <td class="border-2 border-color p-1 lg:p-4 w-1/12 lg:w-1/6">
-                        <InputItem inputs={$filteredListings[i].inputs} gamepediaUrl={gamepediaUrl} />
-                        </td>
+                            <!-- This is the input items -->
+                            <td class="border-2 border-color p-1 lg:p-4 w-1/12 lg:w-1/6">
+                            <InputItem inputs={$filteredListings[i].inputs} gamepediaUrl={gamepediaUrl} />
+                            </td>
 
-                        <!-- This is the trader -->
-                        <td class="border-2 border-color p-1 lg:p-4 lg:w-1/6">
-                            <Trader trader={$filteredListings[i].trader} gamepediaUrl={gamepediaUrl} />
-                        </td> 
+                            <!-- This is the trader -->
+                            <td class="border-2 border-color p-1 lg:p-4 lg:w-1/6">
+                                <Trader trader={$filteredListings[i].trader} gamepediaUrl={gamepediaUrl} />
+                            </td> 
 
-                        <!-- This is the output item -->
-                        <td class="border-2 border-color p-1 lg:p-4 w-1/12 lg:w-1/6">
-                            <!-- We reuse the InputItem component by passing an array with one element in it -->
-                            <InputItem inputs={[$filteredListings[i].output]} gamepediaUrl={gamepediaUrl} />
-                        </td> 
-                    </tr>
+                            <!-- This is the output item -->
+                            <td class="border-2 border-color p-1 lg:p-4 w-1/12 lg:w-1/6">
+                                <!-- We reuse the InputItem component by passing an array with one element in it -->
+                                <InputItem inputs={[$filteredListings[i].output]} gamepediaUrl={gamepediaUrl} />
+                            </td> 
+                        </tr>
+                    {/if}
                 {/each}
-
-                
             </tbody>
         </table>
     {/if}

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { filteredListings, itemInfo, listings, showingAmount } from './stores'; 
 
-    var timeoutFunc:number;
+    var timeoutFunc: NodeJS.Timeout;
     var searchText = "";
 
     function filter(text:string){

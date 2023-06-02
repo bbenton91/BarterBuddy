@@ -3,8 +3,6 @@
     import { listings, itemInfo, currentItemInfo, currentItem } from './stores';
     import {emptyItemInfo} from "./Types";
 
-
-
     // import Image from 'svelte-image'
 
     export let inputs:Item[]
@@ -12,6 +10,7 @@
 
     let m = {x:0, y:0};
     let elem:HTMLElement;
+
 
     function setSearch(text:string){
         let input = document.querySelector("#itemSearchInput") as HTMLInputElement;
@@ -41,6 +40,9 @@
         tooltip.style.top = event.clientY - tooltip.offsetHeight/2 + window.pageYOffset + "px";
         elem = tooltip;
     }
+
+    console.log(inputs)
+
 </script>
 
 <!-- This is the input items -->
@@ -51,7 +53,9 @@
             <!-- <Image src={"/images"+output.iconHref} /> -->
             <div class="flex justify-center">
                 <!-- svelte-ignore a11y-missing-attribute -->
-                <a class="cursor-pointer self-center max-w-3 lg:max-w-lg h-auto" on:click={() => setSearch(inputItem.name)}><img class="self-center" src={"/images"+inputItem.iconHref} alt=""></a>
+                <a class="cursor-pointer self-center max-w-3 lg:max-w-lg h-auto" on:click={() => setSearch(inputItem.name)}>
+                    <img class="self-center" src={"/images"+inputItem.iconHref} alt="">
+                </a>
                 <span class="self-center pl-1">x{inputItem.amount}</span>
             </div>
             <!-- svelte-ignore a11y-missing-attribute -->
