@@ -42,5 +42,6 @@ _output
 *.crt
 build.sh
 /public/images
+/public/build
 /.well-known/
 /images

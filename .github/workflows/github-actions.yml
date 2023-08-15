@@ -1,0 +1,57 @@
+name: Test and Build Artifact On Main Push
+run-name: Build and Deploy on main branch push
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+      - run: npm run build
+
+      - name: Build the Docker image
+        run: docker build . --tag ${{secrets.DOCKER_REPO}}:latest
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push to dockerhub
+        run: docker push ${{secrets.DOCKER_REPO}}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+      - name: Adding Known Hosts
+        run: echo "${{ secrets.SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+
+      - name: SSH to server and start docker
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
+            echo "Logging into dockerhub"
+            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+            echo "Pulling image"
+            docker pull pahazul/eftbarters-site:latest
+            docker image ls
+            docker container ls -a
+            docker rm -f eftbarters-site-container
+            docker container ls -a
+            echo "Starting docker container"
+            docker run -p 80:80 -p 443:443 --network=host --dns=8.8.8.8 --name eftbarters-site-container -d --restart unless-stopped -t pahazul/eftbarters-site certbot --nginx --non-interactive --agree-tos -m bbenton91.dev@gmail.com -d eftbarters.com,www.eftbarters.com
+          EOF
