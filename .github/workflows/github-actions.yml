@@ -54,5 +54,5 @@ jobs:
             docker rm -f eftbarters-site-container
             docker container ls -a
             echo "Starting docker container"
-            docker run -p 80:80 -p 443:443 --network=host --dns=8.8.8.8 --name eftbarters-site-container -d --restart unless-stopped -t pahazul/eftbarters-site
+            docker run -p 80:80 -p 443:443 --network=host --dns=8.8.8.8 --name eftbarters-site-container -d -t pahazul/eftbarters-site certbot --nginx --non-interactive --agree-tos -m bbenton91.dev@gmail.com -d eftbarters.com,www.eftbarters.com
           EOF
