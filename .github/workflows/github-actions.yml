@@ -42,12 +42,9 @@ jobs:
       - name: Adding Known Hosts
         run: echo "${{ secrets.SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
 
-      - run: ls -al
-      - run: ls build -al
-
       - name: SSH to server and start docker
         run: |
-          scp -r build/nginx ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/nginx-config
+          scp -r build/nginx ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/nginx
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
             echo "Logging into dockerhub"
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
@@ -59,5 +56,5 @@ jobs:
             docker container ls -a
             echo "Starting docker container"
             docker run -p 80:80 -p 443:443 --network=host --dns=8.8.8.8 --name eftbarters-site-container -dit -v CertVolume:/certvolume -v ImageVolume:/imagevolume -t pahazul/eftbarters-site
-            docker cp ~/nginx-config eftbarters-site-container:/etc/nginx
+            docker cp ~/nginx eftbarters-site-container:/etc
           EOF
