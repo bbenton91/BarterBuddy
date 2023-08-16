@@ -44,7 +44,7 @@ jobs:
 
       - name: SSH to server and start docker
         run: |
-          scp -r build/nginx ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/nginx
+          scp -r build/nginx ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
             echo "Logging into dockerhub"
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
