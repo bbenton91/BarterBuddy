@@ -42,6 +42,8 @@ jobs:
       - name: Adding Known Hosts
         run: echo "${{ secrets.SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
 
+      - run: ls -al
+
       - name: SSH to server and start docker
         run: |
           scp -r /build/nginx ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/nginx-config
