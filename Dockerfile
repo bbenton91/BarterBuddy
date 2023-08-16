@@ -1,6 +1,6 @@
 FROM nginx:alpine
-COPY /public/ /usr/share/nginx/html/
-COPY /nginx/ /etc/nginx/
+COPY /build/public/ /usr/share/nginx/html/
+# COPY /build/nginx/ /etc/nginx/
 
 EXPOSE 80 443
 

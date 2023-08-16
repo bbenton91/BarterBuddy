@@ -44,6 +44,7 @@ jobs:
 
       - name: SSH to server and start docker
         run: |
+          scp -r /build/nginx ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/nginx-config
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
             echo "Logging into dockerhub"
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
@@ -54,5 +55,6 @@ jobs:
             docker rm -f eftbarters-site-container
             docker container ls -a
             echo "Starting docker container"
-            docker run -p 80:80 -p 443:443 --network=host --dns=8.8.8.8 --name eftbarters-site-container -dit -t pahazul/eftbarters-site
+            docker run -p 80:80 -p 443:443 --network=host --dns=8.8.8.8 --name eftbarters-site-container -dit -v CertVolume:/certvolume -v ImageVolume:/imagevolume -t pahazul/eftbarters-site
+            docker cp ~/nginx-config eftbarters-site-container:/etc/nginx
           EOF
