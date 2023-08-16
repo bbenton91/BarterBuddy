@@ -43,6 +43,7 @@ jobs:
         run: echo "${{ secrets.SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
 
       - run: ls -al
+      - run: ls build -al
 
       - name: SSH to server and start docker
         run: |
