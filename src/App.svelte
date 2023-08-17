@@ -13,7 +13,6 @@
 
 
 	export const gamepediaUrl = "https://escapefromtarkov.gamepedia.com";
-	const barterUrl = "/escapefromtarkov.gamepedia.com/Barter_trades"
 
 	// The lifetime of cache data in seconds. 60*60 = 1 hour of cache
 	const cacheLifeTime = 60*60
@@ -50,7 +49,7 @@
 		// If our cached data is empty, fetch from the server
 		if(data.trades.length < 1){
 			console.log("fetching server data");
-			var response = await fetch(Env.API)
+			var response = await fetch("http://localhost:9775/api/get-data")
 			var responseText = await response.text();
 			let responseData:ResponseData = JSON.parse(responseText)
 			setCachedData('trades', JSON.stringify(responseData.trades));
