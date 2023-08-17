@@ -6,6 +6,7 @@
 	import Tailwindcss from './Tailwindcss.svelte';
 	import Trades from './Trades.svelte';
 	import type { ItemInfo, Trade } from './Types';
+	import * as Env from "../Env"
  // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 
 	// dotenv.config()
@@ -48,7 +49,7 @@
 		// If our cached data is empty, fetch from the server
 		if(data.trades.length < 1){
 			console.log("fetching server data");
-			var response = await fetch(window.location.host+"/api/get-data")
+			var response = await fetch("https://eftbarters.com/api/get-data")
 			var responseText = await response.text();
 			let responseData:ResponseData = JSON.parse(responseText)
 			setCachedData('trades', JSON.stringify(responseData.trades));
