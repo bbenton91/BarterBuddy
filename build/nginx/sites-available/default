@@ -2,4 +2,7 @@
 server {
     server_name www.eftbarters.com;
     return 301 $scheme://eftbarters.com$request_uri;
+
+    ssl_certificate /certvolume/live/eftbarters.com/fullchain.pem;
+    ssl_certificate_key /certvolume/live/eftbarters.com/privkey.pem;
 }
