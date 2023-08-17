@@ -49,7 +49,7 @@
 		// If our cached data is empty, fetch from the server
 		if(data.trades.length < 1){
 			console.log("fetching server data");
-			var response = await fetch("http://localhost:9775/api/get-data")
+			var response = await fetch(window.location.host+"/api/get-data")
 			var responseText = await response.text();
 			let responseData:ResponseData = JSON.parse(responseText)
 			setCachedData('trades', JSON.stringify(responseData.trades));
