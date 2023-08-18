@@ -41,7 +41,6 @@
 
 <main class="p-4 mx-auto text-center w-full lg:w-4/6 text-svelte tall" on:mouseenter={startMouseMove}>
     <Tooltip />
-
     <!-- If there are no filtered listings, we want to let them know -->
     {#if $filteredListings.length == 0}
         <div class="flex justify-center">

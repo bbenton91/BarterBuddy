@@ -101,7 +101,7 @@
 		let map = new Map<string, ItemInfo>();
 		for (let info of data.extendedInfo){
 			// console.log(info.name);
-			map.set(info.name, info);
+			map.set(info.itemName, info);
 		}
 
 		// console.log(data.extendedInfo);
