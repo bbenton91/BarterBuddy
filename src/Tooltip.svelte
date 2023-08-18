@@ -1,15 +1,11 @@
 <script lang="ts">
-import { currentItem, currentItemInfo } from "./stores";
-
-import type { ItemInfo } from "./Types";
-
-    // export let item:Item;
+	import { currentItem, currentItemInfo } from "./stores";
+	import type { ItemInfo } from "./Types";
 
 </script>
 
 
 <style>
-
 	#tooltip{
 		position: absolute;
 		background-color: rgb(19, 19, 19);
@@ -18,11 +14,11 @@ import type { ItemInfo } from "./Types";
 </style>
 
 <main id="tooltip" class="text-left p-4 mx-auto text-svelte hidden">
-	<h2 class="text-xl">{$currentItemInfo.name} ({$currentItemInfo?.abbreviation})</h2>
+	<h2 class="text-xl">{$currentItemInfo.itemName} ({$currentItemInfo?.itemAbbreviation})</h2>
 
-	{#if $currentItemInfo.quests.length > 0}
+	{#if $currentItemInfo.questDescriptions.length > 0}
 		<h2 class="text-lg mt-2">Quests</h2>
-		{#each $currentItemInfo.quests as quest}
+		{#each $currentItemInfo.questDescriptions as quest}
 			<p class="ml-2">{quest}</p>
 		{/each}
 	{/if}

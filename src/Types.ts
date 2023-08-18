@@ -12,6 +12,8 @@ export type Trader = {
   relativeHref: string
 }
 
+
+
 export type Trade = {
   inputs: Array<Item>
   trader: Trader
@@ -19,11 +21,11 @@ export type Trade = {
 }
 
 export type ItemInfo = {
-  name: string
-  quests: Array<string>
-  abbreviation: string
+  itemName: string
+  questDescriptions: Array<string>
+  itemAbbreviation: string
   locations: Array<string>
-  hideoutReqs: Array<string>
+  hideoutRequirements: Array<string>
 }
 
 export function emptyItem(): Item {
@@ -35,7 +37,7 @@ export function emptyTrader(): Trader{
 }
 
 export function emptyItemInfo(): ItemInfo {
-  return { name: "", quests: [], abbreviation: "", locations: [], hideoutReqs: [] };
+  return { itemName: "", questDescriptions: [], itemAbbreviation: "", locations: [], hideoutRequirements: [] };
 }
 
 export function emptyTrade(): Trade {
