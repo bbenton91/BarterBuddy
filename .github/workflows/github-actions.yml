@@ -57,6 +57,6 @@ jobs:
             echo "Starting docker container"
             docker run -p 80:80 -p 443:443 --network=host --dns=8.8.8.8 --name eftbarters-site-container -dit --restart unless-stopped -v CertVolume:/certvolume -v ImageVolume:/imagevolume -t pahazul/eftbarters-site
             docker cp ~/nginx eftbarters-site-container:/etc
-            docker exec -it eftbarters-site-container nginx -s reload
-            docker exec -it eftbarters-site-container cp -r /imagevolume /usr/share/nginx/html/images
+            docker exec eftbarters-site-container nginx -s reload
+            docker exec eftbarters-site-container cp -r /imagevolume /usr/share/nginx/html/images
           EOF
