@@ -12,7 +12,7 @@
 
 	export const gamepediaUrl = "https://escapefromtarkov.gamepedia.com";
 
-	// The lifetime of cache data in seconds. 60*60 = 1 hour of cache.
+	// The lifetime of cache data in seconds. 60*60 = 1 hour of cache
 	const cacheLifeTime = 60 * 60;
 
 	type CachedData = {
